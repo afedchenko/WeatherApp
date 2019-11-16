@@ -1,0 +1,23 @@
+<resources>
+
+    <!-- Main screen -->
+    <string name="app_name">Weather</string>
+    <string name="city_name_main_screen">Novosibirsk</string>
+    <string name="searchButtonText">Settings</string>
+    <string name="site">Browser</string>
+
+    <!-- Settings screen -->
+    <string name="Back">Back</string>
+    <string name="other">Other</string>
+    <string name="cities">Cities</string>
+    <string name="set_view_parameters">Set view parameters</string>
+
+    <!-- Dictionaries -->
+    <string name="wind_speed">Wind speed</string>
+    <string name="air_pressure">Pressure</string>
+    <string name="air_humidity">Humidity</string>
+    <string name="novosibirsk">Novosibirsk</string>
+    <string name="moscow">Moscow</string>
+    <string name="saint_petersburg">St. Petersburg</string>
+
+</resources>

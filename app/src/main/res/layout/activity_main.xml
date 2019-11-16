@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="50dp"
+        tools:context=".MainActivity">
+
+
+        <ImageView
+            android:id="@+id/activity_main_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/novosibirsk"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
+
+        <Button
+            android:id="@+id/activity_main_button_setings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:text="@string/searchButtonText"
+            app:layout_constraintStart_toStartOf="@id/activity_main_image_view"
+            app:layout_constraintTop_toTopOf="@id/activity_main_image_view" />
+
+        <Button
+            android:id="@+id/activity_main_button_browser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/site"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/activity_main_image_view" />
+
+
+        <TextView
+            android:id="@+id/activity_main_city_current"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="32dp"
+            android:gravity="center"
+            android:text="@string/city_name_main_screen"
+            android:textSize="25sp"
+            app:layout_constraintTop_toBottomOf="@id/activity_main_image_view" />
+
+        <TextView
+            android:id="@+id/activity_main_temperature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="-13°"
+            android:textSize="60sp"
+            app:layout_constraintTop_toBottomOf="@+id/activity_main_city_current" />
+
+        <LinearLayout
+            android:id="@+id/activity_main_linear_layout_humidity"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/activity_main_temperature">
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:text="@string/air_humidity" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="98%" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/activity_main_linear_layout_wind_speed"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/activity_main_linear_layout_humidity">
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:text="@string/wind_speed" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="12" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/activity_main_linear_layuot_pressure"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@+id/activity_main_linear_layout_wind_speed">
+
+            <TextView
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:text="@string/air_pressure" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="765" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
