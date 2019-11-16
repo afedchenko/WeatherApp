@@ -27,9 +27,6 @@ public class WeatherSettingsActivity extends Activity {
     public static final String PRESSURE = "WeatherSettingsActivityPressure";
     public static final String WIND_SPEED = "WeatherSettingsActivityWindSpeed";
     public static final String CITY_NAME = "WeatherSettingsCityName";
-    public static final String CITY_MOSCOW = "WeatherSettingsActivityCityMoscow";
-    public static final String CITY_SAINT_PETERBURG = "WeatherSettingsActivityCityPeterburg";
-    public static final String CITY_OTHER = "WeatherSettingsActivityCityOther";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
