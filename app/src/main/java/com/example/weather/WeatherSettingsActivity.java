@@ -1,6 +1,5 @@
 package com.example.weather;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,13 +12,13 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class WeatherSettingsActivity extends Activity {
+public class WeatherSettingsActivity extends AppCompatActivity {
     private EditText cityName;
     private Switch humidity, pressure, windSpeed;
     private Button backButton;
     private RadioButton moscow, saintPetersburg, other;
-    private String cityNameValue;
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
@@ -54,7 +53,6 @@ public class WeatherSettingsActivity extends Activity {
         getDataFromMain();
     }
 
-
     //По аппаратной кнопке "Назад" делаем всё то же, что и по кнопке "Back"
     @Override
     public void onBackPressed() {
@@ -72,11 +70,11 @@ public class WeatherSettingsActivity extends Activity {
     // Определяем, какой город нужно отправить в activityMain
     public String cityNameToActivityMain() {
         if (other.isChecked() && !cityName.getText().toString().equals("")) {
-            return cityNameValue = cityName.getText().toString();
+            return cityName.getText().toString();
         } else if (moscow.isChecked()) {
-            return cityNameValue = getString(R.string.moscow);
+            return getString(R.string.moscow);
         } else if (saintPetersburg.isChecked()) {
-            return cityNameValue = getString(R.string.saint_petersburg);
+            return getString(R.string.saint_petersburg);
         } else return getString(R.string.city_name_main_screen);
     }
 

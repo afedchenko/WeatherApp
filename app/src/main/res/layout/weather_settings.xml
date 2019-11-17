@@ -77,7 +77,8 @@
             android:id="@+id/weather_settings_city_other_change"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textCapWords" />
+            android:inputType="textCapWords"
+            android:hint="@string/other_city_placeholder"/>
 
         <Button
             android:id="@+id/weather_settings_button_back"

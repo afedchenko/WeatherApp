@@ -11,7 +11,6 @@
         android:paddingBottom="50dp"
         tools:context=".MainActivity">
 
-
         <ImageView
             android:id="@+id/activity_main_image_view"
             android:layout_width="match_parent"
@@ -43,7 +42,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/activity_main_image_view" />
 
-
         <TextView
             android:id="@+id/activity_main_city_current"
             android:layout_width="match_parent"
@@ -63,70 +61,11 @@
             android:textSize="60sp"
             app:layout_constraintTop_toBottomOf="@+id/activity_main_city_current" />
 
-        <LinearLayout
-            android:id="@+id/activity_main_linear_layout_humidity"
+        <fragment
+            android:id="@+id/fragment_weather_params"
+            android:name="com.example.weather.WeatherWidgetFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/activity_main_temperature">
-
-            <TextView
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:padding="16dp"
-                android:text="@string/air_humidity" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="98%" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/activity_main_linear_layout_wind_speed"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/activity_main_linear_layout_humidity">
-
-            <TextView
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:padding="16dp"
-                android:text="@string/wind_speed" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="12" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/activity_main_linear_layuot_pressure"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/activity_main_linear_layout_wind_speed">
-
-            <TextView
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:padding="16dp"
-                android:text="@string/air_pressure" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="765" />
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/activity_main_temperature" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
