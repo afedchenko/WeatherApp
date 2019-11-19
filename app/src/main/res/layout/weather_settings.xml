@@ -49,36 +49,12 @@
             android:layout_marginBottom="8dp"
             android:text="@string/cities" />
 
-        <RadioGroup
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RadioButton
-                android:id="@+id/weather_settings_city_moscow"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/moscow" />
-
-            <RadioButton
-                android:id="@+id/weather_settings_city_saint_petersburg"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/saint_petersburg" />
-
-            <RadioButton
-                android:id="@+id/weather_settings_city_other"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/other" />
-
-        </RadioGroup>
-
-        <EditText
-            android:id="@+id/weather_settings_city_other_change"
+        <LinearLayout
+            android:id="@+id/weather_settings_city_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textCapWords"
-            android:hint="@string/other_city_placeholder"/>
+            android:orientation="vertical"
+            android:padding="8dp" />
 
         <Button
             android:id="@+id/weather_settings_button_back"
