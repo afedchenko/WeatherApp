@@ -10,6 +10,8 @@ import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.util.Objects;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -49,7 +51,6 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         saintPetersburg = findViewById(R.id.weather_settings_city_saint_petersburg);
         other = findViewById(R.id.weather_settings_city_other);
         restoreData(savedInstanceState);
-        cityNameToActivityMain();
         getDataFromMain();
     }
 
@@ -84,10 +85,10 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         pressure.setChecked(getIntent().getBooleanExtra(PRESSURE, false));
         windSpeed.setChecked(getIntent().getBooleanExtra(WIND_SPEED, false));
 
-        if (getIntent().getStringExtra(CITY_NAME).equals(getString(R.string.moscow))) {
+        if (Objects.equals(getIntent().getStringExtra(CITY_NAME), getString(R.string.moscow))) {
             cityName.setText("");
             moscow.setChecked(true);
-        } else if (getIntent().getStringExtra(CITY_NAME).equals(getString(R.string.saint_petersburg))) {
+        } else if (Objects.equals(getIntent().getStringExtra(CITY_NAME), getString(R.string.saint_petersburg))) {
             cityName.setText("");
             saintPetersburg.setChecked(true);
         } else {
