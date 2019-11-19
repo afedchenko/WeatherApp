@@ -1,16 +1,17 @@
 <resources>
 
-    <!-- Main screen -->
+    <!-- Main activity -->
     <string name="app_name">Weather</string>
     <string name="city_name_main_screen">Novosibirsk</string>
     <string name="searchButtonText">Settings</string>
     <string name="site">Browser</string>
 
-    <!-- Settings screen -->
+    <!-- Weather settings activity -->
     <string name="Back">Back</string>
     <string name="other">Other</string>
     <string name="cities">Cities</string>
     <string name="set_view_parameters">Set view parameters</string>
+    <string name="other_city_placeholder">Enter city…</string>
 
     <!-- Dictionaries -->
     <string name="wind_speed">Wind speed</string>

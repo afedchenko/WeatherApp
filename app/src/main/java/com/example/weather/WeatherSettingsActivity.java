@@ -1,6 +1,5 @@
 package com.example.weather;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,15 +10,17 @@ import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.util.Objects;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
-public class WeatherSettingsActivity extends Activity {
+public class WeatherSettingsActivity extends AppCompatActivity {
     private EditText cityName;
     private Switch humidity, pressure, windSpeed;
     private Button backButton;
     private RadioButton moscow, saintPetersburg, other;
-    private String cityNameValue;
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
@@ -27,9 +28,6 @@ public class WeatherSettingsActivity extends Activity {
     public static final String PRESSURE = "WeatherSettingsActivityPressure";
     public static final String WIND_SPEED = "WeatherSettingsActivityWindSpeed";
     public static final String CITY_NAME = "WeatherSettingsCityName";
-    public static final String CITY_MOSCOW = "WeatherSettingsActivityCityMoscow";
-    public static final String CITY_SAINT_PETERBURG = "WeatherSettingsActivityCityPeterburg";
-    public static final String CITY_OTHER = "WeatherSettingsActivityCityOther";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -53,10 +51,8 @@ public class WeatherSettingsActivity extends Activity {
         saintPetersburg = findViewById(R.id.weather_settings_city_saint_petersburg);
         other = findViewById(R.id.weather_settings_city_other);
         restoreData(savedInstanceState);
-        cityNameToActivityMain();
         getDataFromMain();
     }
-
 
     //По аппаратной кнопке "Назад" делаем всё то же, что и по кнопке "Back"
     @Override
@@ -75,11 +71,11 @@ public class WeatherSettingsActivity extends Activity {
     // Определяем, какой город нужно отправить в activityMain
     public String cityNameToActivityMain() {
         if (other.isChecked() && !cityName.getText().toString().equals("")) {
-            return cityNameValue = cityName.getText().toString();
+            return cityName.getText().toString();
         } else if (moscow.isChecked()) {
-            return cityNameValue = getString(R.string.moscow);
+            return getString(R.string.moscow);
         } else if (saintPetersburg.isChecked()) {
-            return cityNameValue = getString(R.string.saint_petersburg);
+            return getString(R.string.saint_petersburg);
         } else return getString(R.string.city_name_main_screen);
     }
 
@@ -89,10 +85,10 @@ public class WeatherSettingsActivity extends Activity {
         pressure.setChecked(getIntent().getBooleanExtra(PRESSURE, false));
         windSpeed.setChecked(getIntent().getBooleanExtra(WIND_SPEED, false));
 
-        if (getIntent().getStringExtra(CITY_NAME).equals(getString(R.string.moscow))) {
+        if (Objects.equals(getIntent().getStringExtra(CITY_NAME), getString(R.string.moscow))) {
             cityName.setText("");
             moscow.setChecked(true);
-        } else if (getIntent().getStringExtra(CITY_NAME).equals(getString(R.string.saint_petersburg))) {
+        } else if (Objects.equals(getIntent().getStringExtra(CITY_NAME), getString(R.string.saint_petersburg))) {
             cityName.setText("");
             saintPetersburg.setChecked(true);
         } else {

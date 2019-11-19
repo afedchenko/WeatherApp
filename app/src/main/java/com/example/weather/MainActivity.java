@@ -15,6 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    private static final String CITY_NAME_MAIN = "ActivityMainCityName";
+    private static final String HUMIDITY_MAIN = "ActivityMainHumidityLayout";
+    private static final String PRESSURE_MAIN = "ActivityMainPressureLayout";
+    private static final String WIND_SPEED_MAIN = "ActivityMainWindSpeedLayout";
     private final int weatherSettingsActivityResultCode = 7;
     private boolean humidityEnabled = true;
     private boolean pressureEnabled = true;
@@ -54,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         pressure = findViewById(R.id.activity_main_linear_layuot_pressure);
         windSpeed = findViewById(R.id.activity_main_linear_layout_wind_speed);
         currentCity = findViewById(R.id.activity_main_city_current);
+        restoreDataTextView(savedInstanceState);
+        checkSwitchValues();
     }
 
     //Подготавливаем данные для отправки в Settings
@@ -95,6 +101,25 @@ public class MainActivity extends AppCompatActivity {
         if (isChecked) {
             layout.setVisibility(View.VISIBLE);
         } else layout.setVisibility(View.GONE);
+    }
+
+    //Сохраняем состояние вьюшек на главном экране
+    @Override
+    public void onSaveInstanceState(Bundle savedInsanceState) {
+        super.onSaveInstanceState(savedInsanceState);
+        savedInsanceState.putString(CITY_NAME_MAIN, currentCity.getText().toString());
+        savedInsanceState.putBoolean(HUMIDITY_MAIN, humidityEnabled);
+        savedInsanceState.putBoolean(PRESSURE_MAIN, pressureEnabled);
+        savedInsanceState.putBoolean(WIND_SPEED_MAIN, windSpeedEnabled);
+    }
+
+    //Восстанавливаем состояние вьюшек на главном экране после пересоздания
+    public void restoreDataTextView(Bundle savedInstanceState) {
+        if (savedInstanceState == null) return;
+        currentCity.setText(savedInstanceState.getString(CITY_NAME_MAIN, currentCity.getText().toString()));
+        humidityEnabled = savedInstanceState.getBoolean(HUMIDITY_MAIN);
+        pressureEnabled = savedInstanceState.getBoolean(PRESSURE_MAIN);
+        windSpeedEnabled = savedInstanceState.getBoolean(WIND_SPEED_MAIN);
     }
 
     @Override
