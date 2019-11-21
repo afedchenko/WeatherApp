@@ -8,9 +8,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout humidity, pressure, windSpeed;
     private Button browser, settings;
     private TextView currentCity;
+    RecyclerView recyclerView;
 
 
     @Override
@@ -52,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
         pressure = findViewById(R.id.activity_main_linear_layuot_pressure);
         windSpeed = findViewById(R.id.activity_main_linear_layout_wind_speed);
         currentCity = findViewById(R.id.activity_main_city_current);
+        recyclerView = findViewById(R.id.activity_main_recycler_view);
         restoreDataTextView(savedInstanceState);
         loadDataFromSettingsModel();
     }
@@ -82,6 +87,17 @@ public class MainActivity extends AppCompatActivity {
         changeVisibilityView(WeatherSettingsModel.getInstance().isHumidityEnabled(), humidity);
         changeVisibilityView(WeatherSettingsModel.getInstance().isPressureEnabled(), pressure);
         changeVisibilityView(WeatherSettingsModel.getInstance().isWindSpeedEnabled(), windSpeed);
+
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        String[] days = {"Сегодня", "Завтра", "Послезавтра", "Через 2 дня"};
+        recyclerView.setAdapter(new DayAdapter(days, new OnCityItemClickListener() {
+            @Override
+            public void onClick(String data) {
+                Toast.makeText(MainActivity.this, data, Toast.LENGTH_LONG).show();
+            }
+        }));
     }
 
     //Проверяем, что нам пришло из настроек свичей, и в зависимости от true/false скрываем или показываем view
