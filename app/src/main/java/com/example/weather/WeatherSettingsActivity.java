@@ -5,22 +5,21 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import java.util.Objects;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class WeatherSettingsActivity extends AppCompatActivity {
-    private EditText cityName;
     private Switch humidity, pressure, windSpeed;
     private Button backButton;
     private RadioButton moscow, saintPetersburg, other;
+    private RecyclerView recyclerView;
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
@@ -34,7 +33,12 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         showLog("OnCreate");
         setContentView(R.layout.weather_settings);
+        initViews();
+        loadFromSettingsModel();
+        restoreData(savedInstanceState);
+    }
 
+    private void initViews() {
         humidity = findViewById(R.id.weather_settings_humidity);
         pressure = findViewById(R.id.weather_settings_pressure);
         windSpeed = findViewById(R.id.weather_settings_wind_speed);
@@ -45,13 +49,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
                 clickOnBackButton();
             }
         });
-
-        cityName = findViewById(R.id.weather_settings_city_other_change);
-        moscow = findViewById(R.id.weather_settings_city_moscow);
-        saintPetersburg = findViewById(R.id.weather_settings_city_saint_petersburg);
-        other = findViewById(R.id.weather_settings_city_other);
-        restoreData(savedInstanceState);
-        getDataFromMain();
+        recyclerView = findViewById(R.id.weather_settings_recycler_view);
     }
 
     //По аппаратной кнопке "Назад" делаем всё то же, что и по кнопке "Back"
@@ -60,74 +58,59 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         clickOnBackButton();
     }
 
-    //Если otherCityCheckValue вернул true, то можем выходить назад в Main
+    //По клику "назад" сохраняем данные в модели, подготавливаем данные для интента
     private void clickOnBackButton() {
-        if (otherCityCheckValue()) {
-            prepareResult();
-            finish();
-        }
+        saveSettingsToModel();
+        prepareResult();
+        finish();
     }
 
-    // Определяем, какой город нужно отправить в activityMain
-    public String cityNameToActivityMain() {
-        if (other.isChecked() && !cityName.getText().toString().equals("")) {
-            return cityName.getText().toString();
-        } else if (moscow.isChecked()) {
-            return getString(R.string.moscow);
-        } else if (saintPetersburg.isChecked()) {
-            return getString(R.string.saint_petersburg);
-        } else return getString(R.string.city_name_main_screen);
+    //Получаем данные из модели настроек
+    private void loadFromSettingsModel() {
+        recyclerView.setHasFixedSize(true);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+        recyclerView.setLayoutManager(layoutManager);
+        String[] cities = getResources().getStringArray(R.array.city_name);
+/*        ArrayList<String> arrayList = new ArrayList<>();
+        for (String str : cities) {
+            arrayList.add(ResourceUtils.getLocalizedStringResource(this, str));
+        }*/
+        recyclerView.setAdapter(new CityAdapter(cities, new OnCityItemClickListener() {
+            @Override
+            public void onClick(String data) {
+                Toast.makeText(WeatherSettingsActivity.this, data, Toast.LENGTH_LONG).show();
+            }
+        }));
+
+        humidity.setChecked(WeatherSettingsModel.getInstance().isHumidityEnabled());
+        pressure.setChecked(WeatherSettingsModel.getInstance().isPressureEnabled());
+        windSpeed.setChecked(WeatherSettingsModel.getInstance().isWindSpeedEnabled());
     }
 
-    //Получаем данные с activityMain
-    private void getDataFromMain() {
-        humidity.setChecked(getIntent().getBooleanExtra(HUMIDITY, false));
-        pressure.setChecked(getIntent().getBooleanExtra(PRESSURE, false));
-        windSpeed.setChecked(getIntent().getBooleanExtra(WIND_SPEED, false));
-
-        if (Objects.equals(getIntent().getStringExtra(CITY_NAME), getString(R.string.moscow))) {
-            cityName.setText("");
-            moscow.setChecked(true);
-        } else if (Objects.equals(getIntent().getStringExtra(CITY_NAME), getString(R.string.saint_petersburg))) {
-            cityName.setText("");
-            saintPetersburg.setChecked(true);
-        } else {
-            other.setChecked(true);
-            cityName.setText(getIntent().getStringExtra(CITY_NAME));
-        }
+    //Метод сохраняет данные в модели
+    private void saveSettingsToModel() {
+        WeatherSettingsModel.getInstance().setHumidityEnabled(humidity.isChecked());
+        WeatherSettingsModel.getInstance().setPressureEnabled(pressure.isChecked());
+        WeatherSettingsModel.getInstance().setWindSpeedEnabled(windSpeed.isChecked());
     }
 
     //Подготавливаем данные для отправки в activityMain
     private void prepareResult() {
         Intent intent = new Intent();
-        intent.putExtra(PRESSURE, pressure.isChecked());
-        intent.putExtra(HUMIDITY, humidity.isChecked());
-        intent.putExtra(WIND_SPEED, windSpeed.isChecked());
-        intent.putExtra(CITY_NAME, cityNameToActivityMain());
         setResult(RESULT_OK, intent);
-    }
-
-    //Проверяем, если выбран Other, но не заполнен EditText, то возвращаем false
-    public boolean otherCityCheckValue() {
-        if (other.isChecked() & cityName.getText().toString().equals("")) {
-            Toast.makeText(this, "Выберите город", Toast.LENGTH_SHORT).show();
-            return false;
-        } else return true;
     }
 
     private void restoreData(Bundle savedInstanceState) {
         if (savedInstanceState == null) return;
-        cityName.setText(savedInstanceState.getString(CITY_NAME, getString(R.string.novosibirsk)));
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putString(CITY_NAME, cityName.getText().toString());
+        saveSettingsToModel();
     }
 
     //Выводим логи по событиям активностей
-
     @Override
     protected void onStart() {
         super.onStart();

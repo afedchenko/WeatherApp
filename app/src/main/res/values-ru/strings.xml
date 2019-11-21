@@ -22,4 +22,11 @@
     <string name="moscow">Москва</string>
     <string name="saint_petersburg">Санкт-Петербург</string>
 
+    <!-- Cities -->
+    <string-array name="city_name">
+        <item>saint_petersburg</item>
+        <item>moscow</item>
+        <item>novosibirsk</item>
+    </string-array>
+
 </resources>
