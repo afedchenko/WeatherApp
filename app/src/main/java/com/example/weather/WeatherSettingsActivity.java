@@ -7,19 +7,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.regex.Pattern;
 
 public class WeatherSettingsActivity extends AppCompatActivity {
     private Switch humidity, pressure, windSpeed;
     private Button backButton;
     private RadioButton moscow, saintPetersburg, other;
     private RecyclerView recyclerView;
+    private TextInputEditText inputCityName;
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
@@ -36,6 +43,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         initViews();
         loadFromSettingsModel();
         restoreData(savedInstanceState);
+        validateCityName();
     }
 
     private void initViews() {
@@ -50,6 +58,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             }
         });
         recyclerView = findViewById(R.id.weather_settings_recycler_view);
+        inputCityName = findViewById(R.id.weather_settings_input_city_name);
     }
 
     //По аппаратной кнопке "Назад" делаем всё то же, что и по кнопке "Back"
@@ -63,6 +72,23 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         saveSettingsToModel();
         prepareResult();
         finish();
+    }
+
+    //Валидируем значение города
+    private void validateCityName(){
+        final Pattern patternCityName = Pattern.compile("^[-A-Za-z ]+$");
+        inputCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus) return;
+                TextView textView = (TextView)view;
+                if(patternCityName.matcher(textView.getText().toString()).matches()) {
+                    ((TextView) view).setError(null);
+                } else {
+                    ((TextView) view).setError("This is not city");
+                }
+            }
+        });
     }
 
     //Получаем данные из модели настроек
@@ -81,6 +107,10 @@ public class WeatherSettingsActivity extends AppCompatActivity {
                 Toast.makeText(WeatherSettingsActivity.this, data, Toast.LENGTH_LONG).show();
             }
         }));
+
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        itemDecoration.setDrawable(getDrawable(R.drawable.list_separator));
+        recyclerView.addItemDecoration(itemDecoration);
 
         humidity.setChecked(WeatherSettingsModel.getInstance().isHumidityEnabled());
         pressure.setChecked(WeatherSettingsModel.getInstance().isPressureEnabled());

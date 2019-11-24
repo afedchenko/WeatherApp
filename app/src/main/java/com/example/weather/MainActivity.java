@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -98,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, data, Toast.LENGTH_LONG).show();
             }
         }));
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        itemDecoration.setDrawable(getDrawable(R.drawable.list_separator));
+        recyclerView.addItemDecoration(itemDecoration);
     }
 
     //Проверяем, что нам пришло из настроек свичей, и в зависимости от true/false скрываем или показываем view

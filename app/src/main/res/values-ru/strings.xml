@@ -13,6 +13,7 @@
     <string name="cities">Города</string>
     <string name="set_view_parameters">Настройки отображения</string>
     <string name="other_city_placeholder">Введите город…</string>
+    <string name="city_name">Выберите город</string>
 
     <!-- Dictionaries -->
     <string name="wind_speed">Скорость ветра</string>
