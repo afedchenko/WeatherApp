@@ -92,10 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (weatherSettings != null) {
             currentCity.setText(weatherSettings.getCity());
-
-            changeVisibilityView(weatherSettings.isHumidityEnabled(), humidity);
-            changeVisibilityView(weatherSettings.isPressureEnabled(), pressure);
-            changeVisibilityView(weatherSettings.isWindSpeedEnabled(), windSpeed);
+            setVisibilityParams();
         } else {
             Toast.makeText(MainActivity.this, "Упс...", Toast.LENGTH_LONG).show();
         }
@@ -103,10 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Загружаем все пришедшие значения свитчей сеттингов
     private void loadDataInMainActivity() {
-        changeVisibilityView(weatherSettings.isHumidityEnabled(), humidity);
-        changeVisibilityView(weatherSettings.isPressureEnabled(), pressure);
-        changeVisibilityView(weatherSettings.isWindSpeedEnabled(), windSpeed);
-
+        setVisibilityParams();
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -120,6 +114,13 @@ public class MainActivity extends AppCompatActivity {
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(getDrawable(R.drawable.list_separator));
         recyclerView.addItemDecoration(itemDecoration);
+    }
+
+    //Метод для изменения видимости параметров погоды
+    private void setVisibilityParams() {
+        changeVisibilityView(weatherSettings.isHumidityEnabled(), humidity);
+        changeVisibilityView(weatherSettings.isPressureEnabled(), pressure);
+        changeVisibilityView(weatherSettings.isWindSpeedEnabled(), windSpeed);
     }
 
     //Проверяем, что нам пришло из настроек свичей, и в зависимости от true/false скрываем или показываем view
