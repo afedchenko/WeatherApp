@@ -20,11 +20,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private static final String CITY_NAME_MAIN = "ActivityMainCityName";
+    public static String SETTINGS = "SETTINGS";
     private final int weatherSettingsActivityResultCode = 7;
     private LinearLayout humidity, pressure, windSpeed;
     private Button browser, settings;
     private TextView currentCity;
     RecyclerView recyclerView;
+    Settings weatherSettings;
 
 
     @Override
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         showLog("OnCreate");
         setContentView(R.layout.activity_main);
+
+        weatherSettings = new Settings(true, true,true, getString(R.string.novosibirsk));
 
         //Инициализируем view кнопку настроек и открываем по ней экран настроек
         settings = findViewById(R.id.activity_main_button_setings);
@@ -59,13 +63,15 @@ public class MainActivity extends AppCompatActivity {
         currentCity = findViewById(R.id.activity_main_city_current);
         recyclerView = findViewById(R.id.activity_main_recycler_view);
         restoreDataTextView(savedInstanceState);
-        loadDataFromSettingsModel();
+        loadDataInMainActivity();
     }
 
     //Подготавливаем данные для отправки в Settings
     private void clickOnSettingsButton() {
         Intent intent = new Intent(this, WeatherSettingsActivity.class);
 //        intent.putExtra(WeatherSettingsActivity.CITY_NAME, currentCity.getText().toString());
+
+        intent.putExtra(SETTINGS, weatherSettings);
         startActivityForResult(intent, weatherSettingsActivityResultCode);
     }
 
@@ -80,14 +86,14 @@ public class MainActivity extends AppCompatActivity {
     //Получаем данные с weatherSettingsActivity
     private void updateWeatherParams(@Nullable Intent data) {
 //        currentCity.setText(data.getStringExtra(WeatherSettingsActivity.CITY_NAME));
-        loadDataFromSettingsModel();
+        loadDataInMainActivity();
     }
 
     //Проверяем все пришедшие значения свитчей сеттингов из модели
-    private void loadDataFromSettingsModel() {
-        changeVisibilityView(WeatherSettingsModel.getInstance().isHumidityEnabled(), humidity);
-        changeVisibilityView(WeatherSettingsModel.getInstance().isPressureEnabled(), pressure);
-        changeVisibilityView(WeatherSettingsModel.getInstance().isWindSpeedEnabled(), windSpeed);
+    private void loadDataInMainActivity() {
+        changeVisibilityView(weatherSettings.isHumidityEnabled(), humidity);
+        changeVisibilityView(weatherSettings.isPressureEnabled(), pressure);
+        changeVisibilityView(weatherSettings.isWindSpeedEnabled(), windSpeed);
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
