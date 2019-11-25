@@ -20,6 +20,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     private Button backButton;
     private RadioButton moscow, saintPetersburg, other;
     private RecyclerView recyclerView;
+    Settings weatherSettings;
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
@@ -34,7 +35,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         showLog("OnCreate");
         setContentView(R.layout.weather_settings);
         initViews();
-        loadFromSettingsModel();
+        loadSettings();
         restoreData(savedInstanceState);
     }
 
@@ -60,13 +61,16 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
     //По клику "назад" сохраняем данные в модели, подготавливаем данные для интента
     private void clickOnBackButton() {
-        saveSettingsToModel();
+        saveSettings();
         prepareResult();
         finish();
     }
 
     //Получаем данные из модели настроек
-    private void loadFromSettingsModel() {
+    private void loadSettings() {
+        weatherSettings = getIntent().getParcelableExtra("SETTINGS");
+
+
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
@@ -82,16 +86,19 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             }
         }));
 
-        humidity.setChecked(WeatherSettingsModel.getInstance().isHumidityEnabled());
-        pressure.setChecked(WeatherSettingsModel.getInstance().isPressureEnabled());
-        windSpeed.setChecked(WeatherSettingsModel.getInstance().isWindSpeedEnabled());
+        if (weatherSettings != null) {
+            System.out.println(weatherSettings.getCity());
+            System.out.println(weatherSettings.isHumidityEnabled());
+            System.out.println(weatherSettings.isPressureEnabled());
+            System.out.println(weatherSettings.isWindSpeedEnabled());
+        }
     }
 
     //Метод сохраняет данные в модели
-    private void saveSettingsToModel() {
-        WeatherSettingsModel.getInstance().setHumidityEnabled(humidity.isChecked());
-        WeatherSettingsModel.getInstance().setPressureEnabled(pressure.isChecked());
-        WeatherSettingsModel.getInstance().setWindSpeedEnabled(windSpeed.isChecked());
+    private void saveSettings() {
+        weatherSettings.setHumidityEnabled(humidity.isChecked());
+        weatherSettings.setPressureEnabled(pressure.isChecked());
+        weatherSettings.setWindSpeedEnabled(windSpeed.isChecked());
     }
 
     //Подготавливаем данные для отправки в activityMain
@@ -107,7 +114,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        saveSettingsToModel();
+        saveSettings();
     }
 
     //Выводим логи по событиям активностей
@@ -145,4 +152,5 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         Log.d(TAG, logMessage);
         //Toast.makeText(getApplicationContext(), logMessage, Toast.LENGTH_SHORT).show();
     }
+
 }
