@@ -26,11 +26,8 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     private Button backButton;
     private RadioButton moscow, saintPetersburg, other;
     private RecyclerView recyclerView;
-<<<<<<< HEAD
     private TextInputEditText inputCityName;
-=======
     Settings weatherSettings;
->>>>>>> master
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
@@ -71,7 +68,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         clickOnBackButton();
     }
 
-    //По клику "назад" сохраняем данные в модели, подготавливаем данные для интента
+    //По клику "назад" сохраняем данные и подготавливаем их для интента
     private void clickOnBackButton() {
         saveSettings();
         prepareResult();
@@ -95,10 +92,18 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         });
     }
 
-    //Получаем данные из модели настроек
+    //Получаем данные из настроек
     private void loadSettings() {
         weatherSettings = getIntent().getParcelableExtra("SETTINGS");
 
+        if (weatherSettings != null) {
+            inputCityName.setText(weatherSettings.getCity());
+            humidity.setChecked(weatherSettings.isHumidityEnabled());
+            pressure.setChecked(weatherSettings.isPressureEnabled());
+            windSpeed.setChecked(weatherSettings.isWindSpeedEnabled());
+        } else {
+            Toast.makeText(WeatherSettingsActivity.this, "Упс...", Toast.LENGTH_LONG).show();
+        }
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -115,25 +120,12 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             }
         }));
 
-<<<<<<< HEAD
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(getDrawable(R.drawable.list_separator));
         recyclerView.addItemDecoration(itemDecoration);
-
-        humidity.setChecked(WeatherSettingsModel.getInstance().isHumidityEnabled());
-        pressure.setChecked(WeatherSettingsModel.getInstance().isPressureEnabled());
-        windSpeed.setChecked(WeatherSettingsModel.getInstance().isWindSpeedEnabled());
-=======
-        if (weatherSettings != null) {
-            System.out.println(weatherSettings.getCity());
-            System.out.println(weatherSettings.isHumidityEnabled());
-            System.out.println(weatherSettings.isPressureEnabled());
-            System.out.println(weatherSettings.isWindSpeedEnabled());
-        }
->>>>>>> master
     }
 
-    //Метод сохраняет данные в модели
+    //Метод сохраняет данные в настройках
     private void saveSettings() {
         weatherSettings.setHumidityEnabled(humidity.isChecked());
         weatherSettings.setPressureEnabled(pressure.isChecked());
@@ -142,7 +134,8 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
     //Подготавливаем данные для отправки в activityMain
     private void prepareResult() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("SETTINGS", weatherSettings);
         setResult(RESULT_OK, intent);
     }
 

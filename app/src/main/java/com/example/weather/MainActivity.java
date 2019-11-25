@@ -35,8 +35,15 @@ public class MainActivity extends AppCompatActivity {
         showLog("OnCreate");
         setContentView(R.layout.activity_main);
 
+        //Выставляем дефолтные значения в объекте настроек
         weatherSettings = new Settings(true, true,true, getString(R.string.novosibirsk));
 
+        initViews();
+        loadDataInMainActivity();
+        restoreDataTextView(savedInstanceState);
+    }
+
+    private void initViews() {
         //Инициализируем view кнопку настроек и открываем по ней экран настроек
         settings = findViewById(R.id.activity_main_button_setings);
         settings.setOnClickListener(new View.OnClickListener() {
@@ -56,21 +63,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Инициализируем view параметров погоды
+        //Инициализируем остальные view
         humidity = findViewById(R.id.activity_main_linear_layout_humidity);
         pressure = findViewById(R.id.activity_main_linear_layuot_pressure);
         windSpeed = findViewById(R.id.activity_main_linear_layout_wind_speed);
         currentCity = findViewById(R.id.activity_main_city_current);
         recyclerView = findViewById(R.id.activity_main_recycler_view);
-        restoreDataTextView(savedInstanceState);
-        loadDataInMainActivity();
     }
 
-    //Подготавливаем данные для отправки в Settings
+    //Подготавливаем данные для отправки в weather_settings
     private void clickOnSettingsButton() {
         Intent intent = new Intent(this, WeatherSettingsActivity.class);
-//        intent.putExtra(WeatherSettingsActivity.CITY_NAME, currentCity.getText().toString());
-
         intent.putExtra(SETTINGS, weatherSettings);
         startActivityForResult(intent, weatherSettingsActivityResultCode);
     }
@@ -83,13 +86,22 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Получаем данные с weatherSettingsActivity
+    //Получаем данные с weather_settings
     private void updateWeatherParams(@Nullable Intent data) {
-//        currentCity.setText(data.getStringExtra(WeatherSettingsActivity.CITY_NAME));
-        loadDataInMainActivity();
+        weatherSettings = getIntent().getParcelableExtra("SETTINGS");
+
+        if (weatherSettings != null) {
+            currentCity.setText(weatherSettings.getCity());
+
+            changeVisibilityView(weatherSettings.isHumidityEnabled(), humidity);
+            changeVisibilityView(weatherSettings.isPressureEnabled(), pressure);
+            changeVisibilityView(weatherSettings.isWindSpeedEnabled(), windSpeed);
+        } else {
+            Toast.makeText(MainActivity.this, "Упс...", Toast.LENGTH_LONG).show();
+        }
     }
 
-    //Проверяем все пришедшие значения свитчей сеттингов из модели
+    //Загружаем все пришедшие значения свитчей сеттингов
     private void loadDataInMainActivity() {
         changeVisibilityView(weatherSettings.isHumidityEnabled(), humidity);
         changeVisibilityView(weatherSettings.isPressureEnabled(), pressure);
