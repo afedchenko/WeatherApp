@@ -21,6 +21,8 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.regex.Pattern;
 
+import static com.example.weather.MainActivity.SETTINGS;
+
 public class WeatherSettingsActivity extends AppCompatActivity {
     private Switch humidity, pressure, windSpeed;
     private Button backButton;
@@ -41,6 +43,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         showLog("OnCreate");
         setContentView(R.layout.weather_settings);
+
         initViews();
         loadSettings();
         restoreData(savedInstanceState);
@@ -94,7 +97,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
     //Получаем данные из настроек
     private void loadSettings() {
-        weatherSettings = getIntent().getParcelableExtra("SETTINGS");
+        weatherSettings = getIntent().getParcelableExtra(SETTINGS);
 
         if (weatherSettings != null) {
             inputCityName.setText(weatherSettings.getCity());
@@ -134,8 +137,8 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
     //Подготавливаем данные для отправки в activityMain
     private void prepareResult() {
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("SETTINGS", weatherSettings);
+        Intent intent = new Intent();
+        intent.putExtra(SETTINGS, weatherSettings);
         setResult(RESULT_OK, intent);
     }
 

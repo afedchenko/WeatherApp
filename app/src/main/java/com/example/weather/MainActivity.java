@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Получаем данные с weather_settings
     private void updateWeatherParams(@Nullable Intent data) {
-        weatherSettings = getIntent().getParcelableExtra("SETTINGS");
+        weatherSettings = data.getParcelableExtra(SETTINGS);
 
         if (weatherSettings != null) {
             currentCity.setText(weatherSettings.getCity());
