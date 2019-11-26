@@ -135,12 +135,15 @@ public class MainActivity extends AppCompatActivity {
     public void onSaveInstanceState(Bundle savedInsanceState) {
         super.onSaveInstanceState(savedInsanceState);
         savedInsanceState.putString(CITY_NAME_MAIN, currentCity.getText().toString());
+        savedInsanceState.putParcelable("savedSetting", weatherSettings);
     }
 
     //Восстанавливаем состояние вьюшек на главном экране после пересоздания
     public void restoreDataTextView(Bundle savedInstanceState) {
         if (savedInstanceState == null) return;
         currentCity.setText(savedInstanceState.getString(CITY_NAME_MAIN, currentCity.getText().toString()));
+        weatherSettings = savedInstanceState.getParcelable("savedSetting");
+        setVisibilityParams();
     }
 
     @Override
