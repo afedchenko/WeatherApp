@@ -22,6 +22,8 @@
     <string name="novosibirsk">Новосибирск</string>
     <string name="moscow">Москва</string>
     <string name="saint_petersburg">Санкт-Петербург</string>
+    <string name="url">URL</string>
+    <string name="ok">ok</string>
 
     <!-- Cities -->
     <string-array name="city_name">
