@@ -12,6 +12,7 @@
     <string name="cities">Cities</string>
     <string name="set_view_parameters">Set view parameters</string>
     <string name="other_city_placeholder">Enter city…</string>
+    <string name="city_name">City name</string>
 
     <!-- Dictionaries -->
     <string name="wind_speed">Wind speed</string>

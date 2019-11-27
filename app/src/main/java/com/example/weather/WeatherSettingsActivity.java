@@ -7,19 +7,28 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.textfield.TextInputEditText;
+
+import java.util.regex.Pattern;
+
+import static com.example.weather.MainActivity.SETTINGS;
 
 public class WeatherSettingsActivity extends AppCompatActivity {
     private Switch humidity, pressure, windSpeed;
     private Button backButton;
     private RadioButton moscow, saintPetersburg, other;
     private RecyclerView recyclerView;
+    private TextInputEditText inputCityName;
     Settings weatherSettings;
 
     //Теги
@@ -34,9 +43,11 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         showLog("OnCreate");
         setContentView(R.layout.weather_settings);
+
         initViews();
         loadSettings();
         restoreData(savedInstanceState);
+        validateCityName();
     }
 
     private void initViews() {
@@ -51,6 +62,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             }
         });
         recyclerView = findViewById(R.id.weather_settings_recycler_view);
+        inputCityName = findViewById(R.id.weather_settings_input_city_name);
     }
 
     //По аппаратной кнопке "Назад" делаем всё то же, что и по кнопке "Back"
@@ -59,17 +71,42 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         clickOnBackButton();
     }
 
-    //По клику "назад" сохраняем данные в модели, подготавливаем данные для интента
+    //По клику "назад" сохраняем данные и подготавливаем их для интента
     private void clickOnBackButton() {
         saveSettings();
         prepareResult();
         finish();
     }
 
-    //Получаем данные из модели настроек
-    private void loadSettings() {
-        weatherSettings = getIntent().getParcelableExtra("SETTINGS");
+    //Валидируем значение города
+    private void validateCityName(){
+        final Pattern patternCityName = Pattern.compile("^[-A-Za-z ]+$");
+        inputCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if(hasFocus) return;
+                TextView textView = (TextView)view;
+                if(patternCityName.matcher(textView.getText().toString()).matches()) {
+                    ((TextView) view).setError(null);
+                } else {
+                    ((TextView) view).setError("This is not city");
+                }
+            }
+        });
+    }
 
+    //Получаем данные из настроек
+    private void loadSettings() {
+        weatherSettings = getIntent().getParcelableExtra(SETTINGS);
+
+        if (weatherSettings != null) {
+            inputCityName.setText(weatherSettings.getCity());
+            humidity.setChecked(weatherSettings.isHumidityEnabled());
+            pressure.setChecked(weatherSettings.isPressureEnabled());
+            windSpeed.setChecked(weatherSettings.isWindSpeedEnabled());
+        } else {
+            Toast.makeText(WeatherSettingsActivity.this, "Упс...", Toast.LENGTH_LONG).show();
+        }
 
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -86,15 +123,12 @@ public class WeatherSettingsActivity extends AppCompatActivity {
             }
         }));
 
-        if (weatherSettings != null) {
-            System.out.println(weatherSettings.getCity());
-            System.out.println(weatherSettings.isHumidityEnabled());
-            System.out.println(weatherSettings.isPressureEnabled());
-            System.out.println(weatherSettings.isWindSpeedEnabled());
-        }
+        DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
+        itemDecoration.setDrawable(getDrawable(R.drawable.list_separator));
+        recyclerView.addItemDecoration(itemDecoration);
     }
 
-    //Метод сохраняет данные в модели
+    //Метод сохраняет данные в настройках
     private void saveSettings() {
         weatherSettings.setHumidityEnabled(humidity.isChecked());
         weatherSettings.setPressureEnabled(pressure.isChecked());
@@ -104,6 +138,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     //Подготавливаем данные для отправки в activityMain
     private void prepareResult() {
         Intent intent = new Intent();
+        intent.putExtra(SETTINGS, weatherSettings);
         setResult(RESULT_OK, intent);
     }
 
