@@ -5,6 +5,7 @@
     <string name="city_name_main_screen">Novosibirsk</string>
     <string name="searchButtonText">Settings</string>
     <string name="site">Browser</string>
+    <string name="refresh">Refresh</string>
 
     <!-- Weather settings activity -->
     <string name="Back">Back</string>
@@ -21,8 +22,6 @@
     <string name="novosibirsk">Novosibirsk</string>
     <string name="moscow">Moscow</string>
     <string name="saint_petersburg">St. Petersburg</string>
-    <string name="url">URL</string>
-    <string name="ok">ok</string>
 
     <!-- Cities -->
     <string-array name="city_name">
