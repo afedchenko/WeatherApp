@@ -2,7 +2,9 @@ package com.example.weather;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -11,10 +13,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.weather.model.WeatherRequest;
+import com.google.gson.Gson;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.stream.Collectors;
+
+import javax.net.ssl.HttpsURLConnection;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,10 +37,22 @@ public class MainActivity extends AppCompatActivity {
     public static String SETTINGS = "SETTINGS";
     private final int weatherSettingsActivityResultCode = 7;
     private LinearLayout humidity, pressure, windSpeed;
-    private Button browser, settings;
+    private Button settings;
+//    private Button browser;
+    private Button refresh;
     private TextView currentCity;
     RecyclerView recyclerView;
     Settings weatherSettings;
+
+    //Данные погоды с сервера
+    private TextView city;
+    private TextView temperature;
+    private TextView pressureFromApi;
+    private TextView humidityFromApi;
+    private TextView windSpeedFromApi;
+    private static final String WEATHER = "WEATHER";
+    private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=Novosibirsk,RU&appid=";
+    private static final String WEATHER_API_KEY = "b75e79b82cfa5ac7d01ece82f8dfcd51";
 
 
     @Override
@@ -40,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         loadDataInMainActivity();
+        refreshParams();
         restoreDataTextView(savedInstanceState);
     }
 
@@ -53,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Инициализируем view кнопку браузера и открываем по ней браузер
+/*        //Инициализируем view кнопку браузера и открываем по ней браузер
         browser = findViewById(R.id.activity_main_button_browser);
         browser.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent openBrowser = new Intent(Intent.ACTION_VIEW, Uri.parse("https://pogoda.ngs.ru/"));
                 startActivity(openBrowser);
             }
-        });
+        });*/
 
         //Инициализируем остальные view
         humidity = findViewById(R.id.activity_main_linear_layout_humidity);
@@ -69,7 +96,77 @@ public class MainActivity extends AppCompatActivity {
         windSpeed = findViewById(R.id.activity_main_linear_layout_wind_speed);
         currentCity = findViewById(R.id.activity_main_city_current);
         recyclerView = findViewById(R.id.activity_main_recycler_view);
-    }
+        pressureFromApi = findViewById(R.id.fragment_weather_widget_pressure);
+        humidityFromApi = findViewById(R.id.fragment_weather_widget_humidity);
+        windSpeedFromApi = findViewById(R.id.fragment_weather_widget_wind_speed);
+        temperature = findViewById(R.id.activity_main_temperature);
+        refresh = findViewById(R.id.activity_main_button_refresh);
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                refreshParams();
+            }
+        });
+
+
+}
+
+    private void refreshParams () {
+                try {
+                    final URL uri = new URL(WEATHER_URL + WEATHER_API_KEY);
+                    final Handler handler = new Handler(); // Запоминаем основной поток
+                    new Thread(new Runnable() {
+                        @RequiresApi(api = Build.VERSION_CODES.N)
+                        public void run() {
+                            HttpsURLConnection urlConnection = null;
+                            try {
+                                urlConnection = (HttpsURLConnection) uri.openConnection();
+                                urlConnection.setRequestMethod("GET"); // установка метода получения данных -GET
+                                urlConnection.setReadTimeout(10000); // установка таймаута - 10 000 миллисекунд
+                                BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
+                                String result = getLines(in);
+                                // преобразование данных запроса в модель
+                                Gson gson = new Gson();
+                                final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
+                                // Возвращаемся к основному потоку
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        displayWeather(weatherRequest);
+                                    }
+                                });
+                            } catch (Exception e) {
+                                Log.e(TAG, "Fail connection", e);
+                                e.printStackTrace();
+                            } finally {
+                                if (null != urlConnection) {
+                                    urlConnection.disconnect();
+                                }
+                            }
+                        }
+                    }).start();
+                } catch (MalformedURLException e) {
+                    Log.e(TAG, "Fail URI", e);
+                    e.printStackTrace();
+                }
+            }
+
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            private String getLines(BufferedReader in) {
+                return in.lines().collect(Collectors.joining("\n"));
+            }
+
+            private void displayWeather(WeatherRequest weatherRequest){
+                currentCity.setText(weatherRequest.getName());
+                String temp = Math.round(weatherRequest.getMain().getTemp() - 273.0) + " °C";
+                double press = Math.round(weatherRequest.getMain().getPressure() * 0.750062);
+                temperature.setText(temp);
+                pressureFromApi.setText(Double.toString(press) + " мм");
+                humidityFromApi.setText(String.format("%d", weatherRequest.getMain().getHumidity()) + " %");
+                windSpeedFromApi.setText(String.format("%d", weatherRequest.getWind().getSpeed())+ " м/с");
+
+            }
+
 
     //Подготавливаем данные для отправки в weather_settings
     private void clickOnSettingsButton() {
@@ -88,6 +185,7 @@ public class MainActivity extends AppCompatActivity {
 
     //Получаем данные с weather_settings
     private void updateWeatherParams(@Nullable Intent data) {
+        assert data != null;
         weatherSettings = data.getParcelableExtra(SETTINGS);
 
         if (weatherSettings != null) {
@@ -101,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
     //Загружаем все пришедшие значения свитчей сеттингов
     private void loadDataInMainActivity() {
         setVisibilityParams();
-        recyclerView.setHasFixedSize(true);
+/*        recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
         String[] days = {"Сегодня", "Завтра", "Послезавтра", "Через 2 дня"};
@@ -113,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
         }));
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(getDrawable(R.drawable.list_separator));
-        recyclerView.addItemDecoration(itemDecoration);
+        recyclerView.addItemDecoration(itemDecoration);*/
     }
 
     //Метод для изменения видимости параметров погоды

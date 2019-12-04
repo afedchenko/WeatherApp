@@ -5,6 +5,7 @@
     <string name="city_name_main_screen">Novosibirsk</string>
     <string name="searchButtonText">Settings</string>
     <string name="site">Browser</string>
+    <string name="refresh">Refresh</string>
 
     <!-- Weather settings activity -->
     <string name="Back">Back</string>

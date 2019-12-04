@@ -6,6 +6,7 @@
     <string name="city_name_main_screen">Новосибирск</string>
     <string name="searchButtonText">Настройки</string>
     <string name="site">Браузер</string>
+    <string name="refresh">Refresh</string>
 
     <!-- Weather settings activity -->
     <string name="Back">Назад</string>

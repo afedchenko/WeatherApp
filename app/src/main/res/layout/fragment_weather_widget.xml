@@ -30,10 +30,10 @@
                 android:text="@string/air_humidity" />
 
             <TextView
+                android:id="@+id/fragment_weather_widget_humidity"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="98%" />
+                android:padding="8dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -52,10 +52,10 @@
                 android:text="@string/wind_speed" />
 
             <TextView
+                android:id="@+id/fragment_weather_widget_wind_speed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="12" />
+                android:padding="8dp" />
         </LinearLayout>
 
         <LinearLayout
@@ -74,10 +74,10 @@
                 android:text="@string/air_pressure" />
 
             <TextView
+                android:id="@+id/fragment_weather_widget_pressure"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                android:text="765" />
+                android:padding="8dp" />
         </LinearLayout>
     </LinearLayout>
 </FrameLayout>

@@ -33,12 +33,12 @@
             app:layout_constraintTop_toTopOf="@id/activity_main_image_view" />
 
         <Button
-            android:id="@+id/activity_main_button_browser"
+            android:id="@+id/activity_main_button_refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:text="@string/site"
+            android:text="@string/refresh"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/activity_main_image_view" />
 
@@ -57,7 +57,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="-13°"
             android:textSize="60sp"
             app:layout_constraintTop_toBottomOf="@+id/activity_main_city_current" />
 
