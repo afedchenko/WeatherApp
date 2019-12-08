@@ -258,15 +258,17 @@ public class MainActivity extends AppCompatActivity {
         showLog("onResume");
 
         //Добавляю датчики температуры и влажности (Выводить значение не буду, датчиков нет)
-        SensorManager manager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        SensorManager manager = (SensorManager) getSystemService(SENSOR_SERVICE);
         assert manager != null;
         List<Sensor> sensors = manager.getSensorList(Sensor.TYPE_ALL);
-        for (Sensor sensor: sensors) {
+        for (Sensor sensor : sensors) {
             Log.i("Sensors", sensor.getName());
         }
 
         Sensor sensorAmbientTemperature = manager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        if (sensorAmbientTemperature == null) return;
         Sensor sensorAbsoluteHumidity = manager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        if (sensorAbsoluteHumidity == null) return;
 
         manager.registerListener(new SensorEventListener() {
             @Override
