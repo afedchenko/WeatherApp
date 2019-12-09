@@ -5,7 +5,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,8 +18,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather.model.WeatherRequest;
@@ -48,6 +45,9 @@ public class MainActivity extends AppCompatActivity {
     private TextView currentCity;
     RecyclerView recyclerView;
     Settings weatherSettings;
+
+    SensorManager manager;
+    SensorEventListener eventListener;
 
     //Данные погоды с сервера
     private TextView city;
@@ -255,10 +255,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        showLog("onResume");
-
         //Добавляю датчики температуры и влажности (Выводить значение не буду, датчиков нет)
-        SensorManager manager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        manager = (SensorManager) getSystemService(SENSOR_SERVICE);
         assert manager != null;
         List<Sensor> sensors = manager.getSensorList(Sensor.TYPE_ALL);
         for (Sensor sensor : sensors) {
@@ -266,11 +264,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Sensor sensorAmbientTemperature = manager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
-        if (sensorAmbientTemperature == null) return;
         Sensor sensorAbsoluteHumidity = manager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        if (sensorAmbientTemperature == null) return;
         if (sensorAbsoluteHumidity == null) return;
 
-        manager.registerListener(new SensorEventListener() {
+        eventListener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent sensorEvent) {
 //                Log.i("Sensors", "Temperature = " + sensorEvent.values[0]);
@@ -280,25 +278,16 @@ public class MainActivity extends AppCompatActivity {
             public void onAccuracyChanged(Sensor sensor, int i) {
 
             }
-        }, sensorAmbientTemperature, 100);
+        };
 
-        manager.registerListener(new SensorEventListener() {
-            @Override
-            public void onSensorChanged(SensorEvent sensorEvent) {
-//                Log.i("Sensors", "Humidity = " + sensorEvent.values[0]);
-            }
-
-            @Override
-            public void onAccuracyChanged(Sensor sensor, int i) {
-
-            }
-        }, sensorAbsoluteHumidity, 100);
+        manager.registerListener(eventListener, sensorAmbientTemperature, 1000);
+        manager.registerListener(eventListener, sensorAbsoluteHumidity, 1000);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        showLog("onPause");
+        manager.unregisterListener(eventListener);
     }
 
     @Override
