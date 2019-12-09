@@ -1,7 +1,10 @@
 package com.example.weather;
 
 import android.content.Intent;
-import android.net.Uri;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,8 +18,6 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather.model.WeatherRequest;
@@ -26,6 +27,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -38,11 +40,14 @@ public class MainActivity extends AppCompatActivity {
     private final int weatherSettingsActivityResultCode = 7;
     private LinearLayout humidity, pressure, windSpeed;
     private Button settings;
-//    private Button browser;
+    //    private Button browser;
     private Button refresh;
     private TextView currentCity;
     RecyclerView recyclerView;
     Settings weatherSettings;
+
+    SensorManager manager;
+    SensorEventListener eventListener;
 
     //Данные погоды с сервера
     private TextView city;
@@ -62,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Выставляем дефолтные значения в объекте настроек
-        weatherSettings = new Settings(true, true,true, getString(R.string.novosibirsk));
+        weatherSettings = new Settings(true, true, true, getString(R.string.novosibirsk));
 
         initViews();
         loadDataInMainActivity();
@@ -107,65 +112,62 @@ public class MainActivity extends AppCompatActivity {
                 refreshParams();
             }
         });
+    }
 
-
-}
-
-    private void refreshParams () {
-                try {
-                    final URL uri = new URL(WEATHER_URL + WEATHER_API_KEY);
-                    final Handler handler = new Handler(); // Запоминаем основной поток
-                    new Thread(new Runnable() {
-                        @RequiresApi(api = Build.VERSION_CODES.N)
-                        public void run() {
-                            HttpsURLConnection urlConnection = null;
-                            try {
-                                urlConnection = (HttpsURLConnection) uri.openConnection();
-                                urlConnection.setRequestMethod("GET"); // установка метода получения данных -GET
-                                urlConnection.setReadTimeout(10000); // установка таймаута - 10 000 миллисекунд
-                                BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
-                                String result = getLines(in);
-                                // преобразование данных запроса в модель
-                                Gson gson = new Gson();
-                                final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
-                                // Возвращаемся к основному потоку
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        displayWeather(weatherRequest);
-                                    }
-                                });
-                            } catch (Exception e) {
-                                Log.e(TAG, "Fail connection", e);
-                                e.printStackTrace();
-                            } finally {
-                                if (null != urlConnection) {
-                                    urlConnection.disconnect();
-                                }
+    private void refreshParams() {
+        try {
+            final URL uri = new URL(WEATHER_URL + WEATHER_API_KEY);
+            final Handler handler = new Handler(); // Запоминаем основной поток
+            new Thread(new Runnable() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                public void run() {
+                    HttpsURLConnection urlConnection = null;
+                    try {
+                        urlConnection = (HttpsURLConnection) uri.openConnection();
+                        urlConnection.setRequestMethod("GET"); // установка метода получения данных -GET
+                        urlConnection.setReadTimeout(10000); // установка таймаута - 10 000 миллисекунд
+                        BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
+                        String result = getLines(in);
+                        // преобразование данных запроса в модель
+                        Gson gson = new Gson();
+                        final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
+                        // Возвращаемся к основному потоку
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                displayWeather(weatherRequest);
                             }
+                        });
+                    } catch (Exception e) {
+                        Log.e(TAG, "Fail connection", e);
+                        e.printStackTrace();
+                    } finally {
+                        if (null != urlConnection) {
+                            urlConnection.disconnect();
                         }
-                    }).start();
-                } catch (MalformedURLException e) {
-                    Log.e(TAG, "Fail URI", e);
-                    e.printStackTrace();
+                    }
                 }
-            }
+            }).start();
+        } catch (MalformedURLException e) {
+            Log.e(TAG, "Fail URI", e);
+            e.printStackTrace();
+        }
+    }
 
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            private String getLines(BufferedReader in) {
-                return in.lines().collect(Collectors.joining("\n"));
-            }
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private String getLines(BufferedReader in) {
+        return in.lines().collect(Collectors.joining("\n"));
+    }
 
-            private void displayWeather(WeatherRequest weatherRequest){
-                currentCity.setText(weatherRequest.getName());
-                String temp = Math.round(weatherRequest.getMain().getTemp() - 273.0) + " °C";
-                double press = Math.round(weatherRequest.getMain().getPressure() * 0.750062);
-                temperature.setText(temp);
-                pressureFromApi.setText(Double.toString(press) + " мм");
-                humidityFromApi.setText(String.format("%d", weatherRequest.getMain().getHumidity()) + " %");
-                windSpeedFromApi.setText(String.format("%d", weatherRequest.getWind().getSpeed())+ " м/с");
-
-            }
+    private void displayWeather(WeatherRequest weatherRequest) {
+        currentCity.setText(weatherRequest.getName());
+        String temp = Math.round(weatherRequest.getMain().getTemp() - 273.0) + " °C";
+        double press = Math.round(weatherRequest.getMain().getPressure() * 0.750062);
+        temperature.setText(temp);
+        pressureFromApi.setText(Double.toString(press) + " мм");
+        humidityFromApi.setText(String.format("%d", weatherRequest.getMain().getHumidity()) + " %");
+        windSpeedFromApi.setText(String.format("%d", weatherRequest.getWind().getSpeed()) + " м/с");
+    }
 
 
     //Подготавливаем данные для отправки в weather_settings
@@ -253,13 +255,39 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        showLog("onResume");
+        //Добавляю датчики температуры и влажности (Выводить значение не буду, датчиков нет)
+        manager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        assert manager != null;
+        List<Sensor> sensors = manager.getSensorList(Sensor.TYPE_ALL);
+        for (Sensor sensor : sensors) {
+            Log.i("Sensors", sensor.getName());
+        }
+
+        Sensor sensorAmbientTemperature = manager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        Sensor sensorAbsoluteHumidity = manager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        if (sensorAmbientTemperature == null) return;
+        if (sensorAbsoluteHumidity == null) return;
+
+        eventListener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent sensorEvent) {
+//                Log.i("Sensors", "Temperature = " + sensorEvent.values[0]);
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int i) {
+
+            }
+        };
+
+        manager.registerListener(eventListener, sensorAmbientTemperature, 1000);
+        manager.registerListener(eventListener, sensorAbsoluteHumidity, 1000);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        showLog("onPause");
+        manager.unregisterListener(eventListener);
     }
 
     @Override
