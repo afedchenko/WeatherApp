@@ -5,7 +5,11 @@
     <string name="city_name_main_screen">Novosibirsk</string>
     <string name="searchButtonText">Settings</string>
     <string name="site">Browser</string>
-    <string name="refresh">Refresh</string>
+
+    <!-- Main activity menu -->
+    <string name="refresh">refresh</string>
+    <string name="settings">Settings</string>
+    <string name="back">Back</string>
 
     <!-- Weather settings activity -->
     <string name="Back">Back</string>
@@ -22,6 +26,10 @@
     <string name="novosibirsk">Novosibirsk</string>
     <string name="moscow">Moscow</string>
     <string name="saint_petersburg">St. Petersburg</string>
+
+    <!-- Toasts -->
+    <string name="updated">Updated</string>
+    <string name="setings_updated">Settings updated successfully</string>
 
     <!-- Cities -->
     <string-array name="city_name">

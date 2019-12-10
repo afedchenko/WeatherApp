@@ -1,14 +1,17 @@
 package com.example.weather;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -25,7 +28,6 @@ import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,12 +41,10 @@ public class MainActivity extends AppCompatActivity {
     public static String SETTINGS = "SETTINGS";
     private final int weatherSettingsActivityResultCode = 7;
     private LinearLayout humidity, pressure, windSpeed;
-    private Button settings;
-    //    private Button browser;
-    private Button refresh;
     private TextView currentCity;
     RecyclerView recyclerView;
     Settings weatherSettings;
+
 
     SensorManager manager;
     SensorEventListener eventListener;
@@ -55,10 +55,29 @@ public class MainActivity extends AppCompatActivity {
     private TextView pressureFromApi;
     private TextView humidityFromApi;
     private TextView windSpeedFromApi;
-    private static final String WEATHER = "WEATHER";
     private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=Novosibirsk,RU&appid=";
     private static final String WEATHER_API_KEY = "b75e79b82cfa5ac7d01ece82f8dfcd51";
 
+    //Инфлейтим меню
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    //Меню на главном экране
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_main_action_refresh) {
+            refreshParams();
+            Toast.makeText(getApplicationContext(), R.string.updated, Toast.LENGTH_SHORT).show();
+        }
+        if (id == R.id.menu_main_action_settings) {
+            clickOnSettingsButton();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,13 +96,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initViews() {
         //Инициализируем view кнопку настроек и открываем по ней экран настроек
-        settings = findViewById(R.id.activity_main_button_setings);
+/*        settings = findViewById(R.id.activity_main_button_setings);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 clickOnSettingsButton();
             }
-        });
+        });*/
 
 /*        //Инициализируем view кнопку браузера и открываем по ней браузер
         browser = findViewById(R.id.activity_main_button_browser);
@@ -105,53 +124,55 @@ public class MainActivity extends AppCompatActivity {
         humidityFromApi = findViewById(R.id.fragment_weather_widget_humidity);
         windSpeedFromApi = findViewById(R.id.fragment_weather_widget_wind_speed);
         temperature = findViewById(R.id.activity_main_temperature);
-        refresh = findViewById(R.id.activity_main_button_refresh);
+/*        refresh = findViewById(R.id.activity_main_button_refresh);
         refresh.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 refreshParams();
+                Toast.makeText(getApplicationContext(), "Обновлено", Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 
+    //Асинктаск с получением погоды с сервера
+    @SuppressLint("StaticFieldLeak")
     private void refreshParams() {
-        try {
-            final URL uri = new URL(WEATHER_URL + WEATHER_API_KEY);
-            final Handler handler = new Handler(); // Запоминаем основной поток
-            new Thread(new Runnable() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                public void run() {
-                    HttpsURLConnection urlConnection = null;
-                    try {
-                        urlConnection = (HttpsURLConnection) uri.openConnection();
-                        urlConnection.setRequestMethod("GET"); // установка метода получения данных -GET
-                        urlConnection.setReadTimeout(10000); // установка таймаута - 10 000 миллисекунд
-                        BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
-                        String result = getLines(in);
-                        // преобразование данных запроса в модель
-                        Gson gson = new Gson();
-                        final WeatherRequest weatherRequest = gson.fromJson(result, WeatherRequest.class);
-                        // Возвращаемся к основному потоку
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                displayWeather(weatherRequest);
-                            }
-                        });
-                    } catch (Exception e) {
-                        Log.e(TAG, "Fail connection", e);
-                        e.printStackTrace();
-                    } finally {
-                        if (null != urlConnection) {
-                            urlConnection.disconnect();
-                        }
+        new AsyncTask<String, String, WeatherRequest>() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            protected WeatherRequest doInBackground(String... strings) {
+                HttpsURLConnection urlConnection = null;
+                try {
+                    URL uri = new URL(WEATHER_URL + WEATHER_API_KEY);
+                    urlConnection = (HttpsURLConnection) uri.openConnection();
+                    urlConnection.setRequestMethod("GET"); // установка метода получения данных -GET
+                    urlConnection.setReadTimeout(10000); // установка таймаута - 10 000 миллисекунд
+                    BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream())); // читаем  данные в поток
+
+                    String result = getLines(in);
+
+                    // преобразование данных запроса в модель
+                    Gson gson = new Gson();
+                    return gson.fromJson(result, WeatherRequest.class);
+
+                } catch (Exception e) {
+                    Log.e(TAG, "Fail connection", e);
+                    e.printStackTrace();
+                } finally {
+                    if (null != urlConnection) {
+                        urlConnection.disconnect();
                     }
                 }
-            }).start();
-        } catch (MalformedURLException e) {
-            Log.e(TAG, "Fail URI", e);
-            e.printStackTrace();
-        }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(WeatherRequest weatherRequest) {
+                if (weatherRequest != null) {
+                    displayWeather(weatherRequest);
+                }
+            }
+        }.execute(WEATHER_URL + WEATHER_API_KEY);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
