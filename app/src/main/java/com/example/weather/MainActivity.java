@@ -58,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather?q=Novosibirsk,RU&appid=";
     private static final String WEATHER_API_KEY = "b75e79b82cfa5ac7d01ece82f8dfcd51";
 
+    private AsyncTask<String, String, WeatherRequest> task;
+
     //Инфлейтим меню
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -137,7 +139,11 @@ public class MainActivity extends AppCompatActivity {
     //Асинктаск с получением погоды с сервера
     @SuppressLint("StaticFieldLeak")
     private void refreshParams() {
-        new AsyncTask<String, String, WeatherRequest>() {
+        if(task != null){
+            task.cancel(true);
+            task = null;
+        }
+        task = new AsyncTask<String, String, WeatherRequest>() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             protected WeatherRequest doInBackground(String... strings) {
@@ -172,7 +178,8 @@ public class MainActivity extends AppCompatActivity {
                     displayWeather(weatherRequest);
                 }
             }
-        }.execute(WEATHER_URL + WEATHER_API_KEY);
+        };
+        task.execute(WEATHER_URL + WEATHER_API_KEY);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -320,6 +327,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        if(task != null){
+            task.cancel(true);
+            task = null;
+        }
         showLog("onDestroy");
     }
 
