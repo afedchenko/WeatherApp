@@ -3,6 +3,8 @@ package com.example.weather;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static com.example.weather.MainActivity.SETTINGS;
@@ -54,15 +57,34 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         humidity = findViewById(R.id.weather_settings_humidity);
         pressure = findViewById(R.id.weather_settings_pressure);
         windSpeed = findViewById(R.id.weather_settings_wind_speed);
-        backButton = findViewById(R.id.weather_settings_button_back);
+/*        backButton = findViewById(R.id.weather_settings_button_back);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 clickOnBackButton();
             }
-        });
+        });*/
         recyclerView = findViewById(R.id.weather_settings_recycler_view);
         inputCityName = findViewById(R.id.weather_settings_input_city_name);
+    }
+
+    //Инфлейтим меню
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_settings, menu);
+        return true;
+    }
+
+    //Меню на главном экране
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.menu_settings_action_back) {
+            clickOnBackButton();
+            Toast.makeText(getApplicationContext(), R.string.setings_updated, Toast.LENGTH_SHORT).show();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     //По аппаратной кнопке "Назад" делаем всё то же, что и по кнопке "Back"
@@ -124,7 +146,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         }));
 
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
-        itemDecoration.setDrawable(getDrawable(R.drawable.list_separator));
+        itemDecoration.setDrawable(Objects.requireNonNull(getDrawable(R.drawable.list_separator)));
         recyclerView.addItemDecoration(itemDecoration);
     }
 

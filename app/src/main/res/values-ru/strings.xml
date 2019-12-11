@@ -6,7 +6,11 @@
     <string name="city_name_main_screen">Новосибирск</string>
     <string name="searchButtonText">Настройки</string>
     <string name="site">Браузер</string>
-    <string name="refresh">Refresh</string>
+
+    <!-- Main activity menu -->
+    <string name="refresh">Обновить</string>
+    <string name="settings">Настройки</string>
+    <string name="back">Назад</string>
 
     <!-- Weather settings activity -->
     <string name="Back">Назад</string>
@@ -23,6 +27,11 @@
     <string name="novosibirsk">Новосибирск</string>
     <string name="moscow">Москва</string>
     <string name="saint_petersburg">Санкт-Петербург</string>
+
+    <!-- Toasts -->
+    <string name="updated">Обновлено</string>
+    <string name="setings_updated">Настройки сохранены</string>
+
 
     <!-- Cities -->
     <string-array name="city_name">
