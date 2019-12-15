@@ -1,17 +1,16 @@
 package com.example.weather;
 
-import android.content.SharedPreferences;
 import android.app.Activity;
-import static android.content.Context.MODE_PRIVATE;
 import android.os.Parcel;
 import android.os.Parcelable;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class Settings implements Parcelable {
     public boolean humidityEnabled;
     private boolean pressureEnabled;
     private boolean windSpeedEnabled;
     private String city;
-    SharedPreferences preferences;
 
     public Settings(boolean humidity, boolean pressure, boolean windSpeed, String city) {
         this.humidityEnabled = humidity;

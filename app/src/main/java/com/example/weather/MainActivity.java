@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     //Асинктаск с получением погоды с сервера
     @SuppressLint("StaticFieldLeak")
     private void refreshParams() {
-        if(task != null){
+        if (task != null) {
             task.cancel(true);
             task = null;
         }
@@ -246,9 +245,9 @@ public class MainActivity extends AppCompatActivity {
 
     //Метод для изменения видимости параметров погоды
     private void setVisibilityParams() {
-        changeVisibilityView(weatherSettings.isHumidityEnabled(), humidity);
-        changeVisibilityView(weatherSettings.isPressureEnabled(), pressure);
-        changeVisibilityView(weatherSettings.isWindSpeedEnabled(), windSpeed);
+        changeVisibilityView(weatherSettings.isHumidityEnabled(this), humidity);
+        changeVisibilityView(weatherSettings.isPressureEnabled(this), pressure);
+        changeVisibilityView(weatherSettings.isWindSpeedEnabled(this), windSpeed);
     }
 
     //Проверяем, что нам пришло из настроек свичей, и в зависимости от true/false скрываем или показываем view
@@ -327,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(task != null){
+        if (task != null) {
             task.cancel(true);
             task = null;
         }
