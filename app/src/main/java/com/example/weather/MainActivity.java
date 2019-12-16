@@ -13,7 +13,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Выставляем дефолтные значения в объекте настроек
-        weatherSettings = new Settings(true, true, true, getString(R.string.novosibirsk));
+        weatherSettings = new Settings(this);
 
         initViews();
         loadDataInMainActivity();
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
     //Асинктаск с получением погоды с сервера
     @SuppressLint("StaticFieldLeak")
     private void refreshParams() {
-        if(task != null){
+        if (task != null) {
             task.cancel(true);
             task = null;
         }
@@ -327,7 +326,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(task != null){
+        if (task != null) {
             task.cancel(true);
             task = null;
         }

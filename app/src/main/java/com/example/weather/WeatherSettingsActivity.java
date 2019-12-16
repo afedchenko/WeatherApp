@@ -101,14 +101,14 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     }
 
     //Валидируем значение города
-    private void validateCityName(){
+    private void validateCityName() {
         final Pattern patternCityName = Pattern.compile("^[-A-Za-z ]+$");
         inputCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                if(hasFocus) return;
-                TextView textView = (TextView)view;
-                if(patternCityName.matcher(textView.getText().toString()).matches()) {
+                if (hasFocus) return;
+                TextView textView = (TextView) view;
+                if (patternCityName.matcher(textView.getText().toString()).matches()) {
                     ((TextView) view).setError(null);
                 } else {
                     ((TextView) view).setError("This is not city");
@@ -152,9 +152,9 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
     //Метод сохраняет данные в настройках
     private void saveSettings() {
-        weatherSettings.setHumidityEnabled(humidity.isChecked());
-        weatherSettings.setPressureEnabled(pressure.isChecked());
-        weatherSettings.setWindSpeedEnabled(windSpeed.isChecked());
+        weatherSettings.setHumidityEnabled(this, humidity.isChecked());
+        weatherSettings.setPressureEnabled(this, pressure.isChecked());
+        weatherSettings.setWindSpeedEnabled(this, windSpeed.isChecked());
     }
 
     //Подготавливаем данные для отправки в activityMain

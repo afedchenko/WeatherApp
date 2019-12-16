@@ -1,18 +1,26 @@
 package com.example.weather;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class Settings implements Parcelable {
-    private boolean humidityEnabled;
+    public boolean humidityEnabled;
     private boolean pressureEnabled;
     private boolean windSpeedEnabled;
     private String city;
+    private String SHARED_SETTINGS = "SHARED_SETTINGS";
+    private String HUMIDITY_NAME = "HUMIDITY_NAME";
+    private String PRESSURE_NAME = "PRESSURE_NAME";
+    private String WIND_SPEED_NAME = "WIND_SPEED_NAME";
 
-    public Settings(boolean humidity, boolean pressure, boolean windSpeed, String city) {
-        this.humidityEnabled = humidity;
-        this.pressureEnabled = pressure;
-        this.windSpeedEnabled = windSpeed;
+    public Settings(Activity activity) {
+        this.humidityEnabled = getSharedPreferences(activity).getBoolean(HUMIDITY_NAME, true);
+        this.pressureEnabled = getSharedPreferences(activity).getBoolean(PRESSURE_NAME, true);
+        this.windSpeedEnabled = getSharedPreferences(activity).getBoolean(WIND_SPEED_NAME, true);
         this.city = city;
     }
 
@@ -35,16 +43,19 @@ public class Settings implements Parcelable {
         }
     };
 
-    public void setHumidityEnabled(boolean humidityEnabled) {
+    public void setHumidityEnabled(Activity activity, boolean humidityEnabled) {
         this.humidityEnabled = humidityEnabled;
+        getSharedPreferences(activity).edit().putBoolean(HUMIDITY_NAME, humidityEnabled).apply();
     }
 
-    public void setPressureEnabled(boolean pressureEnabled) {
+    public void setPressureEnabled(Activity activity, boolean pressureEnabled) {
         this.pressureEnabled = pressureEnabled;
+        getSharedPreferences(activity).edit().putBoolean(PRESSURE_NAME, pressureEnabled).apply();
     }
 
-    public void setWindSpeedEnabled(boolean windSpeedEnabled) {
+    public void setWindSpeedEnabled(Activity activity, boolean windSpeedEnabled) {
         this.windSpeedEnabled = windSpeedEnabled;
+        getSharedPreferences(activity).edit().putBoolean(WIND_SPEED_NAME, windSpeedEnabled).apply();
     }
 
     public void setCity(String city) {
@@ -61,6 +72,10 @@ public class Settings implements Parcelable {
 
     public boolean isWindSpeedEnabled() {
         return windSpeedEnabled;
+    }
+
+    private SharedPreferences getSharedPreferences(Activity activity) {
+        return activity.getSharedPreferences(SHARED_SETTINGS, MODE_PRIVATE);
     }
 
     public String getCity() {
