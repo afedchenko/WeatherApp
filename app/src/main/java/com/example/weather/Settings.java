@@ -1,6 +1,7 @@
 package com.example.weather;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,6 +12,10 @@ public class Settings implements Parcelable {
     private boolean pressureEnabled;
     private boolean windSpeedEnabled;
     private String city;
+    private String SHARED_SETTINGS = "SHARED_SETTINGS";
+    private String HUMIDITY_NAME = "HUMIDITY_NAME";
+    private String PRESSURE_NAME = "PRESSURE_NAME";
+    private String WIND_SPEED_NAME = "WIND_SPEED_NAME";
 
     public Settings(boolean humidity, boolean pressure, boolean windSpeed, String city) {
         this.humidityEnabled = humidity;
@@ -40,17 +45,17 @@ public class Settings implements Parcelable {
 
     public void setHumidityEnabled(Activity activity, boolean humidityEnabled) {
         this.humidityEnabled = humidityEnabled;
-        activity.getSharedPreferences("Settings", MODE_PRIVATE).edit().putBoolean("humidity", humidityEnabled).apply();
+        getSharedPreferences(activity).edit().putBoolean(HUMIDITY_NAME, humidityEnabled).apply();
     }
 
     public void setPressureEnabled(Activity activity, boolean pressureEnabled) {
         this.pressureEnabled = pressureEnabled;
-        activity.getSharedPreferences("Settings", MODE_PRIVATE).edit().putBoolean("pressure", pressureEnabled).apply();
+        getSharedPreferences(activity).edit().putBoolean(PRESSURE_NAME, pressureEnabled).apply();
     }
 
     public void setWindSpeedEnabled(Activity activity, boolean windSpeedEnabled) {
         this.windSpeedEnabled = windSpeedEnabled;
-        activity.getSharedPreferences("Settings", MODE_PRIVATE).edit().putBoolean("windSpeed", windSpeedEnabled).apply();
+        getSharedPreferences(activity).edit().putBoolean(WIND_SPEED_NAME, windSpeedEnabled).apply();
     }
 
     public void setCity(String city) {
@@ -58,15 +63,19 @@ public class Settings implements Parcelable {
     }
 
     public boolean isHumidityEnabled(Activity activity) {
-        return humidityEnabled = activity.getSharedPreferences("Settings", MODE_PRIVATE).getBoolean("humidity", true);
+        return humidityEnabled = getSharedPreferences(activity).getBoolean(HUMIDITY_NAME, true);
     }
 
     public boolean isPressureEnabled(Activity activity) {
-        return pressureEnabled  = activity.getSharedPreferences("Settings", MODE_PRIVATE).getBoolean("pressure", true);
+        return pressureEnabled  = getSharedPreferences(activity).getBoolean(PRESSURE_NAME, true);
     }
 
     public boolean isWindSpeedEnabled(Activity activity) {
-        return windSpeedEnabled = activity.getSharedPreferences("Settings", MODE_PRIVATE).getBoolean("windSpeed", true);
+        return windSpeedEnabled = getSharedPreferences(activity).getBoolean(WIND_SPEED_NAME, true);
+    }
+
+    private SharedPreferences getSharedPreferences(Activity activity) {
+        return activity.getSharedPreferences(SHARED_SETTINGS, MODE_PRIVATE);
     }
 
     public String getCity() {
