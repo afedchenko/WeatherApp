@@ -123,9 +123,9 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
         if (weatherSettings != null) {
             inputCityName.setText(weatherSettings.getCity());
-            humidity.setChecked(weatherSettings.isHumidityEnabled(this));
-            pressure.setChecked(weatherSettings.isPressureEnabled(this));
-            windSpeed.setChecked(weatherSettings.isWindSpeedEnabled(this));
+            humidity.setChecked(weatherSettings.isHumidityEnabled());
+            pressure.setChecked(weatherSettings.isPressureEnabled());
+            windSpeed.setChecked(weatherSettings.isWindSpeedEnabled());
         } else {
             Toast.makeText(WeatherSettingsActivity.this, "Упс...", Toast.LENGTH_LONG).show();
         }

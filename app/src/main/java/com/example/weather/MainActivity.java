@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Выставляем дефолтные значения в объекте настроек
-        weatherSettings = new Settings(true, true, true, getString(R.string.novosibirsk));
+        weatherSettings = new Settings(this);
 
         initViews();
         loadDataInMainActivity();
@@ -245,9 +245,9 @@ public class MainActivity extends AppCompatActivity {
 
     //Метод для изменения видимости параметров погоды
     private void setVisibilityParams() {
-        changeVisibilityView(weatherSettings.isHumidityEnabled(this), humidity);
-        changeVisibilityView(weatherSettings.isPressureEnabled(this), pressure);
-        changeVisibilityView(weatherSettings.isWindSpeedEnabled(this), windSpeed);
+        changeVisibilityView(weatherSettings.isHumidityEnabled(), humidity);
+        changeVisibilityView(weatherSettings.isPressureEnabled(), pressure);
+        changeVisibilityView(weatherSettings.isWindSpeedEnabled(), windSpeed);
     }
 
     //Проверяем, что нам пришло из настроек свичей, и в зависимости от true/false скрываем или показываем view

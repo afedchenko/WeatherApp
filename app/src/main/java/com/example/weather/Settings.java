@@ -17,10 +17,10 @@ public class Settings implements Parcelable {
     private String PRESSURE_NAME = "PRESSURE_NAME";
     private String WIND_SPEED_NAME = "WIND_SPEED_NAME";
 
-    public Settings(boolean humidity, boolean pressure, boolean windSpeed, String city) {
-        this.humidityEnabled = humidity;
-        this.pressureEnabled = pressure;
-        this.windSpeedEnabled = windSpeed;
+    public Settings(Activity activity) {
+        this.humidityEnabled = getSharedPreferences(activity).getBoolean(HUMIDITY_NAME, true);
+        this.pressureEnabled = getSharedPreferences(activity).getBoolean(PRESSURE_NAME, true);
+        this.windSpeedEnabled = getSharedPreferences(activity).getBoolean(WIND_SPEED_NAME, true);
         this.city = city;
     }
 
@@ -62,16 +62,16 @@ public class Settings implements Parcelable {
         this.city = city;
     }
 
-    public boolean isHumidityEnabled(Activity activity) {
-        return humidityEnabled = getSharedPreferences(activity).getBoolean(HUMIDITY_NAME, true);
+    public boolean isHumidityEnabled() {
+        return humidityEnabled;
     }
 
-    public boolean isPressureEnabled(Activity activity) {
-        return pressureEnabled  = getSharedPreferences(activity).getBoolean(PRESSURE_NAME, true);
+    public boolean isPressureEnabled() {
+        return pressureEnabled;
     }
 
-    public boolean isWindSpeedEnabled(Activity activity) {
-        return windSpeedEnabled = getSharedPreferences(activity).getBoolean(WIND_SPEED_NAME, true);
+    public boolean isWindSpeedEnabled() {
+        return windSpeedEnabled;
     }
 
     private SharedPreferences getSharedPreferences(Activity activity) {
