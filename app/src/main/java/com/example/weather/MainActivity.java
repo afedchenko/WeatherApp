@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.menu_main_action_refresh) {
-            requestRetrofit(cityName);
+            refreshWeatherFromApi();
             Toast.makeText(getApplicationContext(), R.string.updated, Toast.LENGTH_SHORT).show();
         }
         if (id == R.id.menu_main_action_settings) {
@@ -89,12 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         loadDataInMainActivity();
-        try {
-            initRetrofit();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        requestRetrofit(cityName);
+        refreshWeatherFromApi();
         restoreDataTextView(savedInstanceState);
     }
 
@@ -117,6 +112,12 @@ public class MainActivity extends AppCompatActivity {
         Call<WeatherRequest> loadWeather(@Query("q") String q, @Query("appid") String apiKey);
     }
 
+    //Метод по обработке API
+    private void refreshWeatherFromApi() {
+        initRetrofit();
+        requestRetrofit(cityName);
+    }
+
     //Инициализируем retrofit
     private void initRetrofit() {
         retrofit = new Retrofit.Builder().baseUrl(BASE_URL).
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<WeatherRequest> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), "Update error", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Data update error", Toast.LENGTH_SHORT).show();
             }
         });
     }
