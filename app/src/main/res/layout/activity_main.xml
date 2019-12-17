@@ -13,7 +13,7 @@
 
         <ImageView
             android:id="@+id/activity_main_image_view"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
             android:src="@drawable/novosibirsk"
@@ -21,28 +21,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="ContentDescription" />
-
-<!--
-        <Button
-            android:id="@+id/activity_main_button_setings"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
-            android:text="@string/searchButtonText"
-            app:layout_constraintStart_toStartOf="@id/activity_main_image_view"
-            app:layout_constraintTop_toTopOf="@id/activity_main_image_view" />
--->
-
-        <!--<Button
-            android:id="@+id/activity_main_button_refresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
-            android:text="@string/refresh"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/activity_main_image_view" />-->
 
         <TextView
             android:id="@+id/activity_main_city_current"

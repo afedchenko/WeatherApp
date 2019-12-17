@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather.model.WeatherRequest;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView currentCity;
     RecyclerView recyclerView;
     Settings weatherSettings;
+    private ImageView imgOnMain;
 
 
     SensorManager manager;
@@ -89,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         loadDataInMainActivity();
+        picassoRefreshImg();
         refreshWeatherFromApi();
         restoreDataTextView(savedInstanceState);
     }
@@ -104,6 +108,14 @@ public class MainActivity extends AppCompatActivity {
         humidityFromApi = findViewById(R.id.fragment_weather_widget_humidity);
         windSpeedFromApi = findViewById(R.id.fragment_weather_widget_wind_speed);
         temperature = findViewById(R.id.activity_main_temperature);
+        imgOnMain = findViewById(R.id.activity_main_image_view);
+    }
+
+    //Работа с Picasso
+    private void picassoRefreshImg(){
+        Picasso.with(this).load("https://img.geliophoto.com/nsk2017/00_nsk2017.jpg")
+                .error(R.drawable.novosibirsk)
+                .into(imgOnMain);
     }
 
     //Создаем интерфейс доступа к web-сервису
