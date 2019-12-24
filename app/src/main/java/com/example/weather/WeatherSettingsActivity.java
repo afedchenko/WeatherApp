@@ -6,8 +6,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,19 +25,15 @@ import java.util.regex.Pattern;
 import static com.example.weather.MainActivity.SETTINGS;
 
 public class WeatherSettingsActivity extends AppCompatActivity {
-    private Switch humidity, pressure, windSpeed;
-    private Button backButton;
-    private RadioButton moscow, saintPetersburg, other;
+    private Switch humidity;
+    private Switch windSpeed;
+    private Switch pressure;
     private RecyclerView recyclerView;
     private TextInputEditText inputCityName;
     Settings weatherSettings;
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
-    public static final String HUMIDITY = "WeatherSettingsActivityHumidity";
-    public static final String PRESSURE = "WeatherSettingsActivityPressure";
-    public static final String WIND_SPEED = "WeatherSettingsActivityWindSpeed";
-    public static final String CITY_NAME = "WeatherSettingsCityName";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,13 +51,6 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         humidity = findViewById(R.id.weather_settings_humidity);
         pressure = findViewById(R.id.weather_settings_pressure);
         windSpeed = findViewById(R.id.weather_settings_wind_speed);
-/*        backButton = findViewById(R.id.weather_settings_button_back);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clickOnBackButton();
-            }
-        });*/
         recyclerView = findViewById(R.id.weather_settings_recycler_view);
         inputCityName = findViewById(R.id.weather_settings_input_city_name);
     }
@@ -155,6 +142,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         weatherSettings.setHumidityEnabled(this, humidity.isChecked());
         weatherSettings.setPressureEnabled(this, pressure.isChecked());
         weatherSettings.setWindSpeedEnabled(this, windSpeed.isChecked());
+        weatherSettings.setCityName(this, inputCityName.getText().toString());
     }
 
     //Подготавливаем данные для отправки в activityMain

@@ -24,6 +24,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,14 +51,13 @@ public class MainActivity extends AppCompatActivity {
     SensorEventListener eventListener;
 
     //Данные погоды с сервера
-    private TextView city;
     private TextView temperature;
     private TextView pressureFromApi;
     private TextView humidityFromApi;
     private TextView windSpeedFromApi;
     private static final String BASE_URL = "https://api.openweathermap.org";
     private static final String WEATHER_API_KEY = "b75e79b82cfa5ac7d01ece82f8dfcd51";
-    private String cityName = "Novosibirsk";
+    private static final String DEFAULT_CITY = "Novosibirsk";
     Retrofit retrofit;
     private OpenWeather openWeather;
 
@@ -88,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Выставляем дефолтные значения в объекте настроек
-        weatherSettings = new Settings(this, cityName);
+        if (weatherSettings == null) {
+            weatherSettings = new Settings(this, DEFAULT_CITY);
+        }
 
         initViews();
         loadDataInMainActivity();
@@ -112,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Работа с Picasso
-    private void picassoRefreshImg(){
+    private void picassoRefreshImg() {
         Picasso.with(this).load("https://img.geliophoto.com/nsk2017/00_nsk2017.jpg")
                 .error(R.drawable.novosibirsk)
                 .into(imgOnMain);
@@ -127,13 +130,23 @@ public class MainActivity extends AppCompatActivity {
     //Метод по обработке API
     private void refreshWeatherFromApi() {
         initRetrofit();
-        requestRetrofit(cityName);
+        requestRetrofit(weatherSettings.getCity().getName());
     }
 
     //Инициализируем retrofit
     private void initRetrofit() {
-        retrofit = new Retrofit.Builder().baseUrl(BASE_URL).
-                addConverterFactory(GsonConverterFactory.create()).build();
+
+
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        httpClient.addInterceptor(logging);
+
+
+        retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .client(httpClient.build())
+                .build();
         openWeather = retrofit.create(OpenWeather.class);
     }
 
@@ -143,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<WeatherRequest> call, Response<WeatherRequest> response) {
                 if (response.body() != null) {
-                    displayWeatherFromRsponse(response);
+                    displayWeatherFromResponse(response);
                 }
             }
 
@@ -155,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Отдельный метод для обработки полей ответа
-    private void displayWeatherFromRsponse(Response<WeatherRequest> response) {
+    private void displayWeatherFromResponse(Response<WeatherRequest> response) {
         String temp = Math.round(response.body().getMain().getTemp() - 273.0) + " °C";
         temperature.setText(temp);
         currentCity.setText(response.body().getName());
@@ -186,8 +199,9 @@ public class MainActivity extends AppCompatActivity {
         weatherSettings = data.getParcelableExtra(SETTINGS);
 
         if (weatherSettings != null) {
-            currentCity.setText(weatherSettings.getCity().getName());
             setVisibilityParams();
+            refreshWeatherFromApi();
+            currentCity.setText(weatherSettings.getCity().getName());
         } else {
             Toast.makeText(MainActivity.this, "Упс...", Toast.LENGTH_LONG).show();
         }
@@ -227,16 +241,14 @@ public class MainActivity extends AppCompatActivity {
 
     //Сохраняем состояние вьюшек на главном экране
     @Override
-    public void onSaveInstanceState(Bundle savedInsanceState) {
-        super.onSaveInstanceState(savedInsanceState);
-        savedInsanceState.putString(CITY_NAME_MAIN, currentCity.getText().toString());
-        savedInsanceState.putParcelable("savedSetting", weatherSettings);
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        savedInstanceState.putParcelable("savedSetting", weatherSettings);
     }
 
     //Восстанавливаем состояние вьюшек на главном экране после пересоздания
     public void restoreDataTextView(Bundle savedInstanceState) {
         if (savedInstanceState == null) return;
-        currentCity.setText(savedInstanceState.getString(CITY_NAME_MAIN, currentCity.getText().toString()));
         weatherSettings = savedInstanceState.getParcelable("savedSetting");
         setVisibilityParams();
     }
