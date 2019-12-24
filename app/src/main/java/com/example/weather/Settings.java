@@ -11,24 +11,24 @@ public class Settings implements Parcelable {
     public boolean humidityEnabled;
     private boolean pressureEnabled;
     private boolean windSpeedEnabled;
-    private String city;
+    private City city;
     private String SHARED_SETTINGS = "SHARED_SETTINGS";
     private String HUMIDITY_NAME = "HUMIDITY_NAME";
     private String PRESSURE_NAME = "PRESSURE_NAME";
     private String WIND_SPEED_NAME = "WIND_SPEED_NAME";
 
-    public Settings(Activity activity) {
+    public Settings(Activity activity, String defaultCityName) {
         this.humidityEnabled = getSharedPreferences(activity).getBoolean(HUMIDITY_NAME, true);
         this.pressureEnabled = getSharedPreferences(activity).getBoolean(PRESSURE_NAME, true);
         this.windSpeedEnabled = getSharedPreferences(activity).getBoolean(WIND_SPEED_NAME, true);
-        this.city = city;
+        city = new City(defaultCityName);
     }
 
     protected Settings(Parcel in) {
         humidityEnabled = in.readByte() != 0;
         pressureEnabled = in.readByte() != 0;
         windSpeedEnabled = in.readByte() != 0;
-        city = in.readString();
+        city = in.readParcelable(City.class.getClassLoader());
     }
 
     public static final Creator<Settings> CREATOR = new Creator<Settings>() {
@@ -58,7 +58,7 @@ public class Settings implements Parcelable {
         getSharedPreferences(activity).edit().putBoolean(WIND_SPEED_NAME, windSpeedEnabled).apply();
     }
 
-    public void setCity(String city) {
+    public void setCity(City city) {
         this.city = city;
     }
 
@@ -78,7 +78,7 @@ public class Settings implements Parcelable {
         return activity.getSharedPreferences(SHARED_SETTINGS, MODE_PRIVATE);
     }
 
-    public String getCity() {
+    public City getCity() {
         return city;
     }
 
@@ -92,6 +92,6 @@ public class Settings implements Parcelable {
         parcel.writeByte((byte) (humidityEnabled ? 1 : 0));
         parcel.writeByte((byte) (pressureEnabled ? 1 : 0));
         parcel.writeByte((byte) (windSpeedEnabled ? 1 : 0));
-        parcel.writeString(city);
+        parcel.writeParcelable(city, 0);
     }
 }

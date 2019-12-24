@@ -122,7 +122,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         weatherSettings = getIntent().getParcelableExtra(SETTINGS);
 
         if (weatherSettings != null) {
-            inputCityName.setText(weatherSettings.getCity());
+            inputCityName.setText(weatherSettings.getCity().getName());
             humidity.setChecked(weatherSettings.isHumidityEnabled());
             pressure.setChecked(weatherSettings.isPressureEnabled());
             windSpeed.setChecked(weatherSettings.isWindSpeedEnabled());

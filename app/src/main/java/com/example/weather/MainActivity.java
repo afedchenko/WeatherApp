@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         //Выставляем дефолтные значения в объекте настроек
-        weatherSettings = new Settings(this);
+        weatherSettings = new Settings(this, cityName);
 
         initViews();
         loadDataInMainActivity();
@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         weatherSettings = data.getParcelableExtra(SETTINGS);
 
         if (weatherSettings != null) {
-            currentCity.setText(weatherSettings.getCity());
+            currentCity.setText(weatherSettings.getCity().getName());
             setVisibilityParams();
         } else {
             Toast.makeText(MainActivity.this, "Упс...", Toast.LENGTH_LONG).show();
