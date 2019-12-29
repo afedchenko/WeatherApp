@@ -172,10 +172,10 @@ public class MainActivity extends AppCompatActivity {
         String temp = Math.round(response.body().getMain().getTemp() - 273.0) + " °C";
         temperature.setText(temp);
         currentCity.setText(response.body().getName());
-        double press = Math.round(response.body().getMain().getPressure() * 0.750062);
+        double press = Math.floor(response.body().getMain().getPressure() * 0.750062);
         pressureFromApi.setText(press + " мм");
-        humidityFromApi.setText(String.format("%d", response.body().getMain().getHumidity()) + " %");
-        windSpeedFromApi.setText(String.format("%d", response.body().getWind().getSpeed()) + " м/с");
+        humidityFromApi.setText(response.body().getMain().getHumidity() + " %");
+        windSpeedFromApi.setText(response.body().getWind().getSpeed() + " м/с");
     }
 
     //Подготавливаем данные для отправки в weather_settings
