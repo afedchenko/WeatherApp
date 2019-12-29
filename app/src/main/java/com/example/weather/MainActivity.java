@@ -1,5 +1,6 @@
 package com.example.weather;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -168,14 +169,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Отдельный метод для обработки полей ответа
+    @SuppressLint("SetTextI18n")
     private void displayWeatherFromResponse(Response<WeatherRequest> response) {
-        String temp = Math.round(response.body().getMain().getTemp() - 273.0) + " °C";
-        temperature.setText(temp);
-        currentCity.setText(response.body().getName());
-        double press = Math.floor(response.body().getMain().getPressure() * 0.750062);
-        pressureFromApi.setText(press + " мм");
-        humidityFromApi.setText(response.body().getMain().getHumidity() + " %");
-        windSpeedFromApi.setText(response.body().getWind().getSpeed() + " м/с");
+        if(response.body() != null) {
+            currentCity.setText(response.body().getName());
+            temperature.setText(Math.round(response.body().getMain().getTemp() - 273.0) + "°C");
+            pressureFromApi.setText(Math.floor(response.body().getMain().getPressure() * 0.750062) + " мм");
+            humidityFromApi.setText(response.body().getMain().getHumidity() + " %");
+            windSpeedFromApi.setText(response.body().getWind().getSpeed() + " м/с");
+        } else Toast.makeText(getApplicationContext(), "Data update error", Toast.LENGTH_SHORT).show();
     }
 
     //Подготавливаем данные для отправки в weather_settings

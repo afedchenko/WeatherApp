@@ -1,14 +1,14 @@
 package com.example.weather.model;
 
 public class Wind {
-    private Integer speed;
+    private Double speed;
     private Integer deg;
 
-    public Integer getSpeed() {
+    public Double getSpeed() {
         return speed;
     }
 
-    public void setSpeed(Integer speed) {
+    public void setSpeed(Double speed) {
         this.speed = speed;
     }
 
