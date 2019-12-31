@@ -1,21 +1,17 @@
 package com.example.weather;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,7 +51,6 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
 
 
         initViews();
@@ -104,8 +99,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
     //По клику "назад" сохраняем данные и подготавливаем их для интента
     private void clickOnBackButton() {
-        String cityToDataBase = inputCityName.getText().toString();
-        dataSource.add(Objects.requireNonNull(cityToDataBase.substring(0, 1).toUpperCase() + cityToDataBase.substring(1)));
+        addCityToDB();
         refreshData();
         saveSettings();
         prepareResult();
@@ -149,7 +143,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         adapter.setOnMenuItemClickListener(new CityAdapter.OnMenuItemClickListener() {
             @Override
             public void onItemSelectClick(City city) {
-                editElement(city);
+                selectElement(city);
             }
 
             @Override
@@ -224,8 +218,18 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         //Toast.makeText(getApplicationContext(), logMessage, Toast.LENGTH_SHORT).show();
     }
 
-    private void editElement(City city) {
-        dataSource.edit(city, "edit title", "edit desc");
+
+    /**Работа с базой данных*/
+    //Ищем совпадения по DB и если их нет, то добавляем новую запись
+    private void addCityToDB() {
+        String cityToDataBase = Objects.requireNonNull(inputCityName.getText()).toString();
+        if (dataSource.searchCityInTable(cityToDataBase)) {
+            dataSource.add(Objects.requireNonNull(cityToDataBase.substring(0, 1).toUpperCase() + cityToDataBase.substring(1)));
+        }
+    }
+
+    private void selectElement(City city) {
+        inputCityName.setText(city.getName());
         refreshData();
     }
 
