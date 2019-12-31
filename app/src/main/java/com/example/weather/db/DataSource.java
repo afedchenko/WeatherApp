@@ -2,13 +2,15 @@ package com.example.weather.db;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+
+import com.example.weather.City;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.SQLException;
-
-import com.example.weather.City;
+import java.sql.SQLOutput;
 
 public class DataSource implements Closeable {
 
@@ -42,15 +44,30 @@ public class DataSource implements Closeable {
         return city;
     }
 
+    public boolean searchCityInTable(String city) {
+        String query = "SELECT " + DataHelper.TABLE_ID + ", " + DataHelper.TABLE_TITLE + " FROM " + DataHelper.TABLE_NAME;
+        Cursor cursor = database.rawQuery(query, null);
+        cursor.moveToFirst();
+        String cityName;
+        while (!cursor.isAfterLast()) {
+            cityName = cursor.getString(cursor.getColumnIndex(DataHelper.TABLE_TITLE));
+            if (cityName.equals(city)) {
+                return false;
+            }
+            cursor.moveToNext();
+        }
+        cursor.close();
+        return true;
+    }
+
     public void edit(City city, String title, String desc) {
         ContentValues values = new ContentValues();
         values.put(DataHelper.TABLE_TITLE, title);
         values.put(DataHelper.TABLE_ID, city.getId());
-
         database.update(DataHelper.TABLE_NAME, values, DataHelper.TABLE_ID + "=" + city.getId(), null);
     }
 
-    public  void delete(City city){
+    public void delete(City city) {
         database.delete(DataHelper.TABLE_NAME, DataHelper.TABLE_ID + "=" + city.getId(), null);
     }
 
