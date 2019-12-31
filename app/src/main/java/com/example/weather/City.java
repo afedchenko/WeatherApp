@@ -4,13 +4,22 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class City implements Parcelable {
+    private long id;
     private String name;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public City(String name) {
         this.name = name;
     }
 
-    protected City(Parcel in) {
+    private City(Parcel in) {
         name = in.readString();
     }
 

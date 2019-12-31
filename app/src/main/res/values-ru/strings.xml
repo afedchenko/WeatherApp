@@ -19,6 +19,9 @@
     <string name="set_view_parameters">Настройки отображения</string>
     <string name="other_city_placeholder">Введите город…</string>
     <string name="city_name">Выберите город</string>
+    <string name="menu_clear">Удалить города</string>
+    <string name="menu_edit">Редактировать</string>
+    <string name="menu_delete">Удалить</string>
 
     <!-- Dictionaries -->
     <string name="wind_speed">Скорость ветра</string>
@@ -31,13 +34,5 @@
     <!-- Toasts -->
     <string name="updated">Обновлено</string>
     <string name="setings_updated">Настройки сохранены</string>
-
-
-    <!-- Cities -->
-    <string-array name="city_name">
-        <item>saint_petersburg</item>
-        <item>moscow</item>
-        <item>novosibirsk</item>
-    </string-array>
 
 </resources>

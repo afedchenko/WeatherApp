@@ -38,7 +38,6 @@ import retrofit2.http.Query;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
-    private static final String CITY_NAME_MAIN = "ActivityMainCityName";
     public static String SETTINGS = "SETTINGS";
     private final int weatherSettingsActivityResultCode = 7;
     private LinearLayout humidity, pressure, windSpeed;
@@ -171,13 +170,14 @@ public class MainActivity extends AppCompatActivity {
     //Отдельный метод для обработки полей ответа
     @SuppressLint("SetTextI18n")
     private void displayWeatherFromResponse(Response<WeatherRequest> response) {
-        if(response.body() != null) {
+        if (response.body() != null) {
             currentCity.setText(response.body().getName());
             temperature.setText(Math.round(response.body().getMain().getTemp() - 273.0) + "°C");
             pressureFromApi.setText(Math.floor(response.body().getMain().getPressure() * 0.750062) + " мм");
             humidityFromApi.setText(response.body().getMain().getHumidity() + " %");
             windSpeedFromApi.setText(response.body().getWind().getSpeed() + " м/с");
-        } else Toast.makeText(getApplicationContext(), "Data update error", Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(getApplicationContext(), "Data update error", Toast.LENGTH_SHORT).show();
     }
 
     //Подготавливаем данные для отправки в weather_settings
