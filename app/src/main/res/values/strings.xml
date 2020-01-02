@@ -19,7 +19,7 @@
     <string name="other_city_placeholder">Enter city…</string>
     <string name="city_name">City name</string>
     <string name="menu_clear">Delete cities</string>
-    <string name="menu_edit">Edit</string>
+    <string name="menu_select">Select</string>
     <string name="menu_delete">Delete</string>
 
     <!-- Dictionaries -->

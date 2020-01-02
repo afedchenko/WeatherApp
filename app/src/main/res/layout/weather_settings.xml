@@ -3,7 +3,8 @@
 
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -49,15 +50,11 @@
             android:layout_marginBottom="8dp"
             android:text="@string/cities" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/weather_settings_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"/>
-
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/weather_settings_edit_text"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            app:errorEnabled="true">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/weather_settings_input_city_name"
@@ -66,6 +63,12 @@
                 android:hint="@string/city_name"
                 android:inputType="textCapWords"/>
         </com.google.android.material.textfield.TextInputLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/weather_settings_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"/>
 
     </LinearLayout>
 </ScrollView>

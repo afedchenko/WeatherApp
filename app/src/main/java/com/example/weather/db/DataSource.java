@@ -44,6 +44,8 @@ public class DataSource implements Closeable {
         return city;
     }
 
+
+    //Читаю всю колонку городов и если нахожу совпадающий вариант, возвращаю false
     public boolean searchCityInTable(String city) {
         String query = "SELECT " + DataHelper.TABLE_ID + ", " + DataHelper.TABLE_TITLE + " FROM " + DataHelper.TABLE_NAME;
         Cursor cursor = database.rawQuery(query, null);

@@ -20,7 +20,7 @@
     <string name="other_city_placeholder">Введите город…</string>
     <string name="city_name">Выберите город</string>
     <string name="menu_clear">Удалить города</string>
-    <string name="menu_edit">Редактировать</string>
+    <string name="menu_select">Выбрать</string>
     <string name="menu_delete">Удалить</string>
 
     <!-- Dictionaries -->

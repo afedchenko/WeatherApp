@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather.db.DataSource;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.sql.SQLException;
 import java.util.Objects;
@@ -35,6 +36,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     Settings weatherSettings;
     private CityAdapter adapter;
     private DataSource dataSource;
+    private TextInputLayout editTextLayout;
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
@@ -65,6 +67,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         windSpeed = findViewById(R.id.weather_settings_wind_speed);
         recyclerView = findViewById(R.id.weather_settings_recycler_view);
         inputCityName = findViewById(R.id.weather_settings_input_city_name);
+        editTextLayout = findViewById(R.id.weather_settings_edit_text);
     }
 
     //Инфлейтим меню
@@ -81,7 +84,6 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.menu_settings_action_back:
                 clickOnBackButton();
-                Toast.makeText(getApplicationContext(), R.string.setings_updated, Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.menu_clear:
                 clearList();
@@ -99,17 +101,40 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
     //По клику "назад" сохраняем данные и подготавливаем их для интента
     private void clickOnBackButton() {
-        addCityToDB();
-        refreshData();
-        saveSettings();
-        prepareResult();
-        finish();
+        if (validateCityName()) {
+            addCityToDB();
+            refreshData();
+            saveSettings();
+            Toast.makeText(getApplicationContext(), R.string.setings_updated, Toast.LENGTH_SHORT).show();
+            prepareResult();
+            finish();
+        } else {
+            isCityNameNotNull();
+        }
     }
 
+    //Проверяем введено ли значение города
+    private void isCityNameNotNull() {
+        if (inputCityName.getText().toString().matches("")) {
+            Toast.makeText(getApplicationContext(), "Город не выбран!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
     //Валидируем значение города
-    private void validateCityName() {
+    private boolean validateCityName() {
         final Pattern patternCityName = Pattern.compile("^[-A-Za-z ]+$");
-        inputCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        if (inputCityName.getText() != null) {
+            if (patternCityName.matcher(inputCityName.getText().toString()).matches()) {
+                editTextLayout.setError(null);
+                return true;
+            }
+        } else {
+            editTextLayout.setError("This is not city");
+        }
+        return false;
+
+/*        inputCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) return;
@@ -120,7 +145,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
                     ((TextView) view).setError("This is not city");
                 }
             }
-        });
+        });*/
     }
 
     //Получаем данные из настроек
