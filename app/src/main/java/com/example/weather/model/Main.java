@@ -2,8 +2,8 @@ package com.example.weather.model;
 
 public class Main {
     private Double temp;
-    private Integer pressure;
-    private Integer humidity;
+    private Double pressure;
+    private Double humidity;
 
     public Double getTemp() {
         return temp;
@@ -13,19 +13,19 @@ public class Main {
         this.temp = temp;
     }
 
-    public Integer getPressure() {
+    public Double getPressure() {
         return pressure;
     }
 
-    public void setPressure(Integer pressure) {
+    public void setPressure(Double pressure) {
         this.pressure = pressure;
     }
 
-    public Integer getHumidity() {
+    public Double getHumidity() {
         return humidity;
     }
 
-    public void setHumidity(Integer humidity) {
+    public void setHumidity(Double humidity) {
         this.humidity = humidity;
     }
 }

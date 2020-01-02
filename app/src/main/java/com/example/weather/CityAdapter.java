@@ -1,57 +1,94 @@
 package com.example.weather;
 
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.weather.db.DataReader;
+
 public class CityAdapter extends RecyclerView.Adapter<CityAdapter.ViewHolder> {
-    private OnCityItemClickListener listener;
-    private String[] cities;
 
-    public CityAdapter(String[] data, OnCityItemClickListener listener) {
-        cities = data;
-        this.listener = listener;
-    }
+    private final DataReader reader;
+    private OnMenuItemClickListener itemMenuClickListener;
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new ViewHolder(
-                LayoutInflater.from(parent.getContext()).
-                        inflate(R.layout.city_item, parent, false)
-        );
+    public CityAdapter(DataReader reader) {
+        this.reader = reader;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.setLabel(cities[position]);
+    public CityAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new ViewHolder(LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.city_item, parent, false));
+    }
+
+    @Override
+    public void onBindViewHolder(CityAdapter.ViewHolder holder, int position) {
+        holder.bind(reader.getPosition(position));
     }
 
     @Override
     public int getItemCount() {
-        return cities.length;
+        return reader.getCount();
+    }
+
+    public void setOnMenuItemClickListener(OnMenuItemClickListener onMenuItemClickListener) {
+        this.itemMenuClickListener = onMenuItemClickListener;
+    }
+
+    public interface OnMenuItemClickListener {
+        void onItemSelectClick(City city);
+        void onItemDeleteClick(City city);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView label;
 
-        public ViewHolder(@NonNull View itemView) {
+        private TextView cityList;
+        private City city;
+
+        public ViewHolder(View itemView) {
             super(itemView);
-            label = itemView.findViewById(R.id.city_item_label);
-            label.setOnClickListener(new View.OnClickListener() {
+            cityList = itemView.findViewById(R.id.city_item_label);
+            cityList.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View view) {
-                    listener.onClick(label.getText().toString());
+                public void onClick(View v) {
+                    if (itemMenuClickListener != null) {
+                        showPopupMenu(cityList);
+                    }
                 }
             });
         }
 
-        void setLabel(String text) {
-            label.setText(text);
+        public void bind(City city) {
+            this.city = city;
+            cityList.setText(city.getName());
+        }
+
+        private void showPopupMenu(View view) {
+            PopupMenu popup = new PopupMenu(view.getContext(), view);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(R.menu.context_menu, popup.getMenu());
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    switch (item.getItemId()) {
+                        case R.id.menu_edit:
+                            itemMenuClickListener.onItemSelectClick(city);
+                            return true;
+                        case R.id.menu_delete:
+                            itemMenuClickListener.onItemDeleteClick(city);
+                            return true;
+                    }
+                    return false;
+                }
+            });
+            popup.show();
         }
     }
 }
+

@@ -28,7 +28,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="32dp"
             android:gravity="center"
-            android:text="@string/city_name_main_screen"
             android:textSize="25sp"
             app:layout_constraintTop_toBottomOf="@id/activity_main_image_view" />
 

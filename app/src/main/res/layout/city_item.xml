@@ -5,8 +5,7 @@
     style="@style/MyCardViewStyle">
     <TextView
         android:id="@+id/city_item_label"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:padding="5dp" />
 </androidx.cardview.widget.CardView>

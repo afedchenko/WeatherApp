@@ -6,8 +6,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.RadioButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -19,33 +17,43 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.weather.db.DataSource;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
+import java.sql.SQLException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
 import static com.example.weather.MainActivity.SETTINGS;
 
 public class WeatherSettingsActivity extends AppCompatActivity {
-    private Switch humidity, pressure, windSpeed;
-    private Button backButton;
-    private RadioButton moscow, saintPetersburg, other;
+    private Switch humidity;
+    private Switch windSpeed;
+    private Switch pressure;
     private RecyclerView recyclerView;
     private TextInputEditText inputCityName;
     Settings weatherSettings;
+    private CityAdapter adapter;
+    private DataSource dataSource;
+    private TextInputLayout editTextLayout;
 
     //Теги
     private static final String TAG = "WeatherSettingsActivity";
-    public static final String HUMIDITY = "WeatherSettingsActivityHumidity";
-    public static final String PRESSURE = "WeatherSettingsActivityPressure";
-    public static final String WIND_SPEED = "WeatherSettingsActivityWindSpeed";
-    public static final String CITY_NAME = "WeatherSettingsCityName";
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         showLog("OnCreate");
         setContentView(R.layout.weather_settings);
+
+        dataSource = new DataSource(this);
+        try {
+            dataSource.open();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
 
         initViews();
         loadSettings();
@@ -57,15 +65,9 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         humidity = findViewById(R.id.weather_settings_humidity);
         pressure = findViewById(R.id.weather_settings_pressure);
         windSpeed = findViewById(R.id.weather_settings_wind_speed);
-/*        backButton = findViewById(R.id.weather_settings_button_back);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                clickOnBackButton();
-            }
-        });*/
         recyclerView = findViewById(R.id.weather_settings_recycler_view);
         inputCityName = findViewById(R.id.weather_settings_input_city_name);
+        editTextLayout = findViewById(R.id.weather_settings_edit_text);
     }
 
     //Инфлейтим меню
@@ -78,13 +80,17 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     //Меню на главном экране
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menu_settings_action_back) {
-            clickOnBackButton();
-            Toast.makeText(getApplicationContext(), R.string.setings_updated, Toast.LENGTH_SHORT).show();
-        }
 
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.menu_settings_action_back:
+                clickOnBackButton();
+                return true;
+            case R.id.menu_clear:
+                clearList();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     //По аппаратной кнопке "Назад" делаем всё то же, что и по кнопке "Back"
@@ -95,15 +101,40 @@ public class WeatherSettingsActivity extends AppCompatActivity {
 
     //По клику "назад" сохраняем данные и подготавливаем их для интента
     private void clickOnBackButton() {
-        saveSettings();
-        prepareResult();
-        finish();
+        if (validateCityName()) {
+            addCityToDB();
+            refreshData();
+            saveSettings();
+            Toast.makeText(getApplicationContext(), R.string.setings_updated, Toast.LENGTH_SHORT).show();
+            prepareResult();
+            finish();
+        } else {
+            isCityNameNotNull();
+        }
     }
 
+    //Проверяем введено ли значение города
+    private void isCityNameNotNull() {
+        if (inputCityName.getText().toString().matches("")) {
+            Toast.makeText(getApplicationContext(), "Город не выбран!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
     //Валидируем значение города
-    private void validateCityName() {
+    private boolean validateCityName() {
         final Pattern patternCityName = Pattern.compile("^[-A-Za-z ]+$");
-        inputCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+        if (inputCityName.getText() != null) {
+            if (patternCityName.matcher(inputCityName.getText().toString()).matches()) {
+                editTextLayout.setError(null);
+                return true;
+            }
+        } else {
+            editTextLayout.setError("This is not city");
+        }
+        return false;
+
+/*        inputCityName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus) return;
@@ -114,7 +145,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
                     ((TextView) view).setError("This is not city");
                 }
             }
-        });
+        });*/
     }
 
     //Получаем данные из настроек
@@ -122,7 +153,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         weatherSettings = getIntent().getParcelableExtra(SETTINGS);
 
         if (weatherSettings != null) {
-            inputCityName.setText(weatherSettings.getCity());
+            inputCityName.setText(weatherSettings.getCity().getName());
             humidity.setChecked(weatherSettings.isHumidityEnabled());
             pressure.setChecked(weatherSettings.isPressureEnabled());
             windSpeed.setChecked(weatherSettings.isWindSpeedEnabled());
@@ -133,18 +164,19 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
-        String[] cities = getResources().getStringArray(R.array.city_name);
-/*        ArrayList<String> arrayList = new ArrayList<>();
-        for (String str : cities) {
-            arrayList.add(ResourceUtils.getLocalizedStringResource(this, str));
-        }*/
-        recyclerView.setAdapter(new CityAdapter(cities, new OnCityItemClickListener() {
+        adapter = new CityAdapter(dataSource.getReader());
+        adapter.setOnMenuItemClickListener(new CityAdapter.OnMenuItemClickListener() {
             @Override
-            public void onClick(String data) {
-                Toast.makeText(WeatherSettingsActivity.this, data, Toast.LENGTH_LONG).show();
+            public void onItemSelectClick(City city) {
+                selectElement(city);
             }
-        }));
 
+            @Override
+            public void onItemDeleteClick(City city) {
+                deleteElement(city);
+            }
+        });
+        recyclerView.setAdapter(adapter);
         DividerItemDecoration itemDecoration = new DividerItemDecoration(this, LinearLayoutManager.VERTICAL);
         itemDecoration.setDrawable(Objects.requireNonNull(getDrawable(R.drawable.list_separator)));
         recyclerView.addItemDecoration(itemDecoration);
@@ -155,6 +187,7 @@ public class WeatherSettingsActivity extends AppCompatActivity {
         weatherSettings.setHumidityEnabled(this, humidity.isChecked());
         weatherSettings.setPressureEnabled(this, pressure.isChecked());
         weatherSettings.setWindSpeedEnabled(this, windSpeed.isChecked());
+        weatherSettings.setCityName(this, inputCityName.getText().toString());
     }
 
     //Подготавливаем данные для отправки в activityMain
@@ -208,6 +241,36 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     private void showLog(String logMessage) {
         Log.d(TAG, logMessage);
         //Toast.makeText(getApplicationContext(), logMessage, Toast.LENGTH_SHORT).show();
+    }
+
+
+    /**Работа с базой данных*/
+    //Ищем совпадения по DB и если их нет, то добавляем новую запись
+    private void addCityToDB() {
+        String cityToDataBase = Objects.requireNonNull(inputCityName.getText()).toString();
+        if (dataSource.searchCityInTable(cityToDataBase)) {
+            dataSource.add(Objects.requireNonNull(cityToDataBase.substring(0, 1).toUpperCase() + cityToDataBase.substring(1)));
+        }
+    }
+
+    private void selectElement(City city) {
+        inputCityName.setText(city.getName());
+        refreshData();
+    }
+
+    private void deleteElement(City city) {
+        dataSource.delete(city);
+        refreshData();
+    }
+
+    private void clearList() {
+        dataSource.deleteAll();
+        refreshData();
+    }
+
+    private void refreshData() {
+        dataSource.getReader().refresh();
+        adapter.notifyDataSetChanged();
     }
 
 }

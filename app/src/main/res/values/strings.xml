@@ -18,6 +18,9 @@
     <string name="set_view_parameters">Set view parameters</string>
     <string name="other_city_placeholder">Enter city…</string>
     <string name="city_name">City name</string>
+    <string name="menu_clear">Delete cities</string>
+    <string name="menu_select">Select</string>
+    <string name="menu_delete">Delete</string>
 
     <!-- Dictionaries -->
     <string name="wind_speed">Wind speed</string>
@@ -30,12 +33,5 @@
     <!-- Toasts -->
     <string name="updated">Updated</string>
     <string name="setings_updated">Settings updated successfully</string>
-
-    <!-- Cities -->
-    <string-array name="city_name">
-        <item>saint_petersburg</item>
-        <item>moscow</item>
-        <item>novosibirsk</item>
-    </string-array>
 
 </resources>
