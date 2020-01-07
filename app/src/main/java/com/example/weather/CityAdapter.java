@@ -43,6 +43,7 @@ public class CityAdapter extends RecyclerView.Adapter<CityAdapter.ViewHolder> {
 
     public interface OnMenuItemClickListener {
         void onItemSelectClick(City city);
+
         void onItemDeleteClick(City city);
     }
 

@@ -5,9 +5,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Switch;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -244,7 +242,9 @@ public class WeatherSettingsActivity extends AppCompatActivity {
     }
 
 
-    /**Работа с базой данных*/
+    /**
+     * Работа с базой данных
+     */
     //Ищем совпадения по DB и если их нет, то добавляем новую запись
     private void addCityToDB() {
         String cityToDataBase = Objects.requireNonNull(inputCityName.getText()).toString();
